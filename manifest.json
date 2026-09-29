@@ -1,0 +1,18 @@
+{
+  "name": "东莞中考数学知识地图",
+  "short_name": "数学知识地图",
+  "description": "人教版初中数学七~九年级：29单元 · 111知识点 · 方格总览 / 知识网格 / 自检清单，可添加到主屏幕离线使用",
+  "lang": "zh-CN",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#F5F1EB",
+  "theme_color": "#F5F1EB",
+  "icons": [
+    { "src": "icon-180.png", "sizes": "180x180", "type": "image/png", "purpose": "any" },
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

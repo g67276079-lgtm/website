@@ -1,0 +1,1352 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+<!-- PWA：Chrome/Android 安装与主题 -->
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#F5F1EB">
+<link rel="manifest" href="manifest.json">
+<!-- PWA：iPhone Safari 添加到主屏幕（读取以下标签，不读 manifest） -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="东莞中考数学知识地图">
+<link rel="apple-touch-icon" href="icon-180.png">
+<!-- 链接分享预览（微信/QQ 读取） -->
+<meta property="og:title" content="东莞中考数学知识地图">
+<meta property="og:description" content="人教版初中数学七~九年级：29单元 · 111知识点 · 方格总览 / 知识网格 / 自检清单，可添加到主屏幕离线使用">
+<meta property="og:type" content="website">
+<meta property="og:image" content="icon-512.png">
+<title>东莞中考数学知识地图</title>
+<style>
+/* ============ 爱马仕轻奢风 · 设计令牌 ============ */
+:root{
+  --bg:#F5F1EB;            /* 米白纸质底 */
+  --card:#FBF8F3;
+  --orange:#F37021;        /* 爱马仕橙 */
+  --orange-deep:#D95F0E;
+  --brown:#6B4423;         /* 马鞍棕 */
+  --deep:#8B6914;          /* 深棕 */
+  --olive:#556B2F;         /* 橄榄绿 */
+  --warm-gray:#D9D2C5;     /* 暖灰 */
+  --line:#DDD3C4;
+  --ink:#4A3420;
+  --m-alg:#9A6B3F;         /* 代数·暖棕 */
+  --m-geo:#556B2F;         /* 几何·橄榄绿 */
+  --m-stat:#E07B39;        /* 统计概率·暖橙 */
+  --m-gen:#A79C8B;         /* 综合实践·米灰 */
+  --gold1:#C9962E; --gold2:#F0D68A; /* 烫金 */
+  --shadow:0 2px 10px rgba(107,68,35,.08),0 1px 3px rgba(107,68,35,.06);
+  --shadow-up:0 10px 26px rgba(107,68,35,.16),0 2px 6px rgba(107,68,35,.10);
+  --r:12px;
+  --serif:Georgia,"Songti SC","STSong","SimSun",serif;
+  --sans:-apple-system,BlinkMacSystemFont,"Hiragino Sans GB","Heiti SC","PingFang SC","Microsoft YaHei",sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{background:var(--bg);color:var(--brown);font-family:var(--sans);font-size:15px;line-height:1.65;
+  background-image:radial-gradient(rgba(139,105,20,.028) 1px,transparent 1px);background-size:22px 22px}
+h1,h2,h3,.serif{font-family:var(--serif);letter-spacing:.02em}
+button{font-family:var(--sans);cursor:pointer}
+::-webkit-scrollbar{width:10px;height:10px}
+::-webkit-scrollbar-thumb{background:var(--warm-gray);border-radius:6px}
+::-webkit-scrollbar-track{background:transparent}
+
+/* ============ 顶部导航 ============ */
+header{position:sticky;top:0;z-index:50;background:rgba(245,241,235,.94);backdrop-filter:blur(8px);
+  border-bottom:1px solid var(--line);padding:10px 20px 8px}
+.hd-row{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.hd-title{font-size:21px;font-weight:700;color:var(--brown);white-space:nowrap}
+.hd-title em{font-style:normal;color:var(--orange)}
+.tabs{display:flex;gap:6px;background:#EDE6DA;border-radius:999px;padding:4px}
+.tab-btn{border:none;background:transparent;color:var(--brown);padding:7px 18px;border-radius:999px;
+  font-size:14px;transition:all .25s;white-space:nowrap;min-height:36px}
+.tab-btn:hover{color:var(--orange-deep)}
+.tab-btn.active{background:var(--orange);color:#fff;box-shadow:0 3px 8px rgba(243,112,33,.35)}
+.search-wrap{position:relative;margin-left:auto}
+.search-input{width:230px;max-width:60vw;padding:8px 14px 8px 32px;border:1px solid var(--line);border-radius:999px;
+  background:#fff;color:var(--brown);font-size:14px;outline:none;transition:border .2s, box-shadow .2s;min-height:36px}
+.search-input:focus{border-color:var(--orange);box-shadow:0 0 0 3px rgba(243,112,33,.14)}
+.search-wrap::before{content:"🔍";position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:13px;opacity:.55}
+.search-drop{position:absolute;top:calc(100% + 6px);right:0;width:320px;max-width:86vw;max-height:340px;overflow:auto;
+  background:#fff;border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow-up);display:none;z-index:60}
+.search-drop.show{display:block}
+.sd-item{padding:9px 14px;cursor:pointer;border-bottom:1px solid #F0EAE0;font-size:13.5px}
+.sd-item:last-child{border-bottom:none}
+.sd-item:hover{background:#FBF3E9}
+.sd-item .sd-t{color:var(--deep);font-size:12px;margin-left:6px}
+.sd-empty{padding:12px 14px;color:#A08B73;font-size:13px}
+
+/* 筛选 + 双进度 */
+.hd-row2{margin-top:8px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.filters{display:flex;gap:8px;flex-wrap:wrap}
+.filters select{padding:6px 10px;border:1px solid var(--line);border-radius:8px;background:#fff;color:var(--brown);
+  font-size:13px;outline:none;min-height:34px}
+.filters select:focus{border-color:var(--orange)}
+.progress-zone{display:flex;gap:18px;margin-left:auto;flex-wrap:wrap}
+.pz-item{display:flex;align-items:center;gap:8px}
+.pz-label{font-size:12.5px;color:var(--deep);white-space:nowrap}
+.pz-bar{width:130px;height:8px;border-radius:99px;background:#E7DFD2;overflow:hidden}
+.pz-fill{height:100%;border-radius:99px;width:0;transition:width .6s cubic-bezier(.22,.9,.35,1)}
+.pz-fill.c1{background:linear-gradient(90deg,#E8963F,var(--orange))}
+.pz-fill.c2{background:linear-gradient(90deg,var(--gold1),var(--gold2))}
+.pz-num{font-size:13px;font-weight:700;color:var(--brown);min-width:44px}
+
+/* ============ 视图容器 ============ */
+main{padding:18px 20px 60px;max-width:1560px;margin:0 auto}
+.view{display:none}
+.view.active{display:block;animation:fadeIn .35s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:12.5px;color:var(--deep);margin-bottom:14px;
+  background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:9px 14px;box-shadow:var(--shadow)}
+.legend b{color:var(--brown)}
+.dot{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+
+/* ============ 模块一：方格总览 ============ */
+.sem-row{display:flex;gap:14px;margin-bottom:16px;align-items:stretch}
+.sem-label{flex:0 0 92px;display:flex;flex-direction:column;justify-content:center;align-items:center;
+  background:linear-gradient(160deg,#EFE7DA,#E7DCC9);border:1px solid var(--line);border-radius:var(--r);
+  font-family:var(--serif);font-weight:700;font-size:16px;color:var(--brown);box-shadow:var(--shadow);padding:10px 6px;text-align:center}
+.sem-label small{font-size:11px;color:var(--deep);font-weight:400;margin-top:4px;font-family:var(--sans)}
+.sem-cards{flex:1;display:grid;grid-template-columns:repeat(auto-fill,minmax(196px,1fr));gap:12px}
+.ucard{position:relative;background:var(--card);border:1px solid var(--line);border-radius:var(--r);
+  padding:13px 14px 26px;cursor:pointer;box-shadow:var(--shadow);
+  transition:transform .22s ease,box-shadow .22s ease;overflow:hidden}
+.ucard::before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:var(--mc,#A79C8B)}
+.ucard:hover{transform:translateY(-3px);box-shadow:var(--shadow-up)}
+.ucard.t-hard{border:2.2px solid var(--brown)}
+.ucard.t-err{outline:2px dashed #7A4E2D;outline-offset:-6px}
+.ucard .u-name{font-family:var(--serif);font-size:16.5px;font-weight:700;color:var(--brown);padding-right:22px}
+.ucard .u-meta{display:flex;gap:6px;flex-wrap:wrap;margin-top:7px;align-items:center}
+.chip{font-size:11px;padding:2px 8px;border-radius:99px;background:var(--mc,#A79C8B);color:#fff;letter-spacing:.04em}
+.ucard .u-kpnum{font-size:11.5px;color:#A08B73;margin-top:6px}
+.ucard .u-check{font-size:11.5px;color:var(--deep);margin-top:2px}
+.year-tag{position:absolute;right:10px;bottom:8px;font-size:10.5px;color:#B09B7F;letter-spacing:.14em}
+.gold-star{background:linear-gradient(115deg,var(--gold1) 20%,var(--gold2) 45%,var(--gold1) 70%);
+  -webkit-background-clip:text;background-clip:text;color:transparent;font-size:15px;font-weight:900;
+  position:absolute;top:9px;right:11px;text-shadow:0 1px 0 rgba(201,150,46,.12)}
+.badge-ico{font-size:12px}
+.fhide{display:none!important}
+.search-dim{opacity:.18;filter:grayscale(.6)}
+.flash{animation:flashBg 1.6s ease}
+@keyframes flashBg{0%,60%{background:#FCE3CF}100%{background:transparent}}
+
+/* ============ 模块二：网格图 ============ */
+.net-wrap{position:relative;background:var(--card);border:1px solid var(--line);border-radius:var(--r);
+  box-shadow:var(--shadow);overflow:hidden}
+#netSvg{display:block;width:100%;height:calc(100vh - 275px);min-height:430px;touch-action:none;cursor:grab}
+#netSvg.panning{cursor:grabbing}
+.net-tools{position:absolute;right:14px;top:14px;display:flex;flex-direction:column;gap:6px;z-index:5}
+.net-tools button{width:38px;height:38px;border-radius:10px;border:1px solid var(--line);background:#fff;
+  color:var(--brown);font-size:18px;box-shadow:var(--shadow);transition:all .2s}
+.net-tools button:hover{border-color:var(--orange);color:var(--orange)}
+.net-hint{position:absolute;left:14px;bottom:12px;font-size:11.5px;color:#A08B73;background:rgba(251,248,243,.85);
+  padding:4px 10px;border-radius:99px;border:1px solid var(--line)}
+.edge{stroke-linecap:round}
+.edge.dep{stroke:#B08A63;stroke-width:1.6}
+.edge.cross{stroke:var(--olive);stroke-width:1.4;stroke-dasharray:6 5;opacity:.75}
+.edge.e-dim{opacity:.07}
+.edge.hl{stroke:var(--orange);stroke-width:3;opacity:1;stroke-dasharray:none}
+.hull{fill-opacity:.09;stroke-opacity:.5;stroke-width:1.8;cursor:pointer;transition:fill-opacity .25s}
+.hull:hover{fill-opacity:.2}
+.hull-lbl{font-family:Georgia,"Songti SC",serif;font-size:13.5px;font-weight:700;cursor:pointer;
+  paint-order:stroke;stroke:rgba(251,248,243,.92);stroke-width:4px}
+.hull-g.h-dim{opacity:.06}
+.node{cursor:pointer}
+.node circle{stroke:#fff;stroke-width:1.6;transition:filter .2s}
+.node:hover circle{filter:brightness(1.12)}
+.node text{font-size:11.5px;fill:var(--brown);paint-order:stroke;stroke:rgba(251,248,243,.9);stroke-width:3px;pointer-events:none}
+/* 标签分级：默认仅 5★；放大一级现 4★；再放大现 3★；🏷 强制全部 */
+.node text.lbl-t4,.node text.lbl-t3,.node text.lbl-hide{display:none}
+#netSvg.tier-4 .node text.lbl-t4{display:block}
+#netSvg.tier-3 .node text.lbl-t4,#netSvg.tier-3 .node text.lbl-t3{display:block}
+#netSvg.show-all .node text{display:block}
+.node .sym{font-size:10px;fill:rgba(255,255,255,.95)}
+.node text.lbl-v{font-size:11px}
+.node.n-dim{opacity:.12}
+.node.hl circle{stroke:var(--orange);stroke-width:3}
+
+/* 悬浮提示 */
+#tip{position:fixed;z-index:80;pointer-events:none;background:#fff;border:1px solid var(--line);border-radius:10px;
+  box-shadow:var(--shadow-up);padding:10px 13px;font-size:13px;max-width:280px;display:none}
+#tip .t-name{font-weight:700;font-family:var(--serif);font-size:14.5px}
+#tip .t-f{color:var(--deep);margin-top:3px;font-size:12.5px}
+#tip .t-stars{color:var(--gold1);letter-spacing:2px;margin-top:2px}
+#tip .t-tags{margin-top:3px;font-size:11.5px;color:#A08B73}
+
+/* ============ 模块三：自检清单 ============ */
+.ck-toolbar{background:var(--card);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);
+  padding:12px 16px;margin-bottom:14px;display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.ck-note{font-size:11.5px;color:#A08B73;line-height:1.5;flex:1 1 260px}
+.btn{border:none;border-radius:10px;padding:9px 16px;font-size:13.5px;transition:all .2s;min-height:40px;white-space:nowrap}
+.btn:active{transform:scale(.96)}
+.btn-pri{background:var(--orange);color:#fff;box-shadow:0 3px 10px rgba(243,112,33,.32)}
+.btn-pri:hover{background:var(--orange-deep)}
+.btn-sec{background:#fff;color:var(--brown);border:1px solid var(--line)}
+.btn-sec:hover{border-color:var(--orange);color:var(--orange)}
+.mod-stats{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+.ms-chip{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:9px 14px;
+  font-size:12.5px;box-shadow:var(--shadow);flex:1 1 150px}
+.ms-chip b{display:block;font-size:14px;margin-bottom:2px}
+.weak-box{background:#FBEFEA;border:1px solid #E5B9A8;border-radius:var(--r);padding:12px 16px;margin-bottom:16px}
+.weak-box summary{cursor:pointer;font-weight:700;color:#A03D1A;font-size:14px;font-family:var(--serif)}
+.weak-list{margin-top:8px;display:flex;flex-direction:column;gap:4px}
+.weak-item{font-size:13px;color:#8C3A20;padding:5px 10px;background:rgba(255,255,255,.65);border-radius:8px;cursor:pointer}
+.weak-item:hover{background:#fff}
+.weak-none{font-size:13px;color:#7C8A5A;margin-top:6px}
+.sem-title{font-size:19px;margin:22px 0 10px;color:var(--brown);border-left:4px solid var(--orange);padding-left:10px}
+.unit-block{background:var(--card);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);margin-bottom:10px;overflow:hidden}
+.unit-head{width:100%;display:flex;align-items:center;gap:10px;padding:12px 16px;background:transparent;border:none;text-align:left}
+.unit-head:hover{background:#F6F0E6}
+.unit-head .caret{transition:transform .25s;color:#B09B7F;font-size:12px}
+.unit-block.open .unit-head .caret{transform:rotate(90deg)}
+.unit-head .uh-name{font-family:var(--serif);font-size:16px;font-weight:700;color:var(--brown)}
+.unit-head .uh-sub{font-size:11.5px;color:#A08B73;margin-left:auto;white-space:nowrap}
+.unit-body{display:none;padding:2px 12px 12px}
+.unit-block.open .unit-body{display:block}
+.kp-row{display:flex;align-items:center;gap:12px;padding:8px 8px;border-top:1px solid #F0E9DD;border-radius:8px;flex-wrap:wrap}
+.kp-row:hover{background:#FAF5EC}
+.seg{display:flex;gap:4px;flex:0 0 auto}
+.seg button{border:1px solid var(--line);background:#fff;color:#A08B73;font-size:12px;padding:6px 10px;
+  border-radius:8px;transition:all .18s;min-height:36px;min-width:44px}
+.seg button:hover{border-color:var(--orange)}
+.seg button.on-s{background:var(--olive);border-color:var(--olive);color:#fff}
+.seg button.on-m{background:var(--orange);border-color:var(--orange);color:#fff}
+.seg button.on-w{background:#A03D1A;border-color:#A03D1A;color:#fff}
+.kp-info{flex:1;display:flex;align-items:center;gap:8px;flex-wrap:wrap;min-width:200px}
+.kp-name{cursor:pointer;font-size:14px;color:var(--brown);border-bottom:1px dashed transparent}
+.kp-name:hover{color:var(--orange);border-bottom-color:var(--orange)}
+.kp-stars{color:var(--gold1);font-size:12.5px;letter-spacing:1.5px;cursor:help;white-space:nowrap}
+.tag-ico{font-size:11px;padding:1px 6px;border-radius:99px;letter-spacing:.05em}
+.tag-gj{background:linear-gradient(115deg,var(--gold1),var(--gold2));color:#5C450F}
+.tag-nd{background:#EFE3D2;color:var(--brown);border:1px solid #D9C4A8}
+.tag-yc{background:#F5E3DC;color:#8C3A20;border:1px dashed #C08A72}
+.kp-id{font-size:10.5px;color:#C4B39C;letter-spacing:.05em}
+
+/* ============ 详情面板 ============ */
+#panelMask{position:fixed;inset:0;background:rgba(74,52,32,.25);opacity:0;pointer-events:none;transition:opacity .3s;z-index:88}
+body.panel-open #panelMask{opacity:1;pointer-events:auto}
+#panel{position:fixed;top:0;right:0;bottom:0;width:min(430px,100vw);background:var(--bg);z-index:90;
+  box-shadow:-12px 0 40px rgba(107,68,35,.18);transform:translateX(105%);transition:transform .38s cubic-bezier(.3,.8,.3,1);
+  display:flex;flex-direction:column}
+body.panel-open #panel{transform:none}
+.p-head{padding:18px 20px 14px;border-bottom:1px solid var(--line);position:relative;background:var(--card)}
+.p-title{font-size:21px;font-weight:700;padding-right:40px}
+.p-sub{font-size:12px;color:var(--deep);margin-top:4px;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.p-close{position:absolute;top:14px;right:14px;width:36px;height:36px;border-radius:50%;border:1px solid var(--line);
+  background:#fff;color:var(--brown);font-size:16px;transition:all .2s}
+.p-close:hover{border-color:var(--orange);color:var(--orange);transform:rotate(90deg)}
+.p-body{overflow-y:auto;padding:16px 20px 40px;flex:1}
+.p-sec{margin-bottom:18px}
+.p-sec>h4{font-family:var(--serif);font-size:15px;color:var(--orange-deep);margin-bottom:7px;
+  display:flex;align-items:center;gap:7px}
+.p-sec>h4::before{content:"";width:4px;height:15px;background:var(--orange);border-radius:2px}
+.p-sec ul{list-style:none}
+.p-sec li{font-size:13.5px;padding:4px 0 4px 16px;position:relative;color:#5D452C}
+.p-sec li::before{content:"·";position:absolute;left:2px;color:var(--orange);font-weight:900}
+.p-kp-list{display:flex;flex-direction:column;gap:5px}
+.p-kp{display:flex;align-items:center;gap:8px;font-size:13.5px;padding:7px 10px;background:var(--card);
+  border:1px solid var(--line);border-radius:9px;flex-wrap:wrap}
+.p-kp .pk-name{flex:1;min-width:120px}
+.p-kp .pk-st{font-size:11px;padding:1px 8px;border-radius:99px;background:#EFE7DA;color:#A08B73}
+.p-kp .pk-st.s{background:var(--olive);color:#fff}
+.p-kp .pk-st.m{background:var(--orange);color:#fff}
+.p-kp .pk-st.w{background:#A03D1A;color:#fff}
+.ex-box{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px 14px}
+.ex-src{display:inline-block;font-size:11px;background:#EFE3D2;color:var(--deep);border-radius:99px;
+  padding:2px 10px;margin-bottom:8px;letter-spacing:.05em}
+.ex-prob{font-size:13.5px;color:#5D452C;line-height:1.7}
+.ex-sol{font-size:13px;color:#6E5B41;margin-top:9px;padding-top:9px;border-top:1px dashed var(--line);line-height:1.7}
+.ex-sol b{color:var(--orange-deep)}
+.pit li::before{content:"⚠";font-size:11px}
+.freq-txt{font-size:13.5px;color:#5D452C;background:var(--card);border:1px solid var(--line);
+  border-radius:10px;padding:10px 14px;line-height:1.7}
+.freq-txt .est{color:var(--orange-deep);font-weight:700}
+details.trace{margin-top:8px}
+details.trace summary{cursor:pointer;font-size:13px;color:var(--deep);padding:6px 10px;background:#F0E9DC;
+  border-radius:8px;list-style:none}
+details.trace summary::before{content:"▸ ";color:var(--orange)}
+details.trace[open] summary::before{content:"▾ "}
+details.trace p{font-size:12.5px;color:#8C7A5E;padding:9px 12px;line-height:1.7;background:#FAF6EF;
+  border-radius:0 0 8px 8px;margin-top:-4px}
+
+/* toast */
+#toast{position:fixed;left:50%;bottom:34px;transform:translate(-50%,20px);background:var(--brown);color:#F5EFE6;
+  padding:10px 22px;border-radius:99px;font-size:13.5px;opacity:0;pointer-events:none;transition:all .3s;z-index:99;
+  box-shadow:var(--shadow-up)}
+#toast.show{opacity:1;transform:translate(-50%,0)}
+
+/* ============ 响应式：手机端 ============ */
+@media (max-width:900px){
+  header{padding:8px 12px 6px}
+  .hd-title{font-size:17px;width:100%}
+  .tabs{order:3;width:100%;justify-content:space-between}
+  .tab-btn{flex:1;padding:8px 6px;font-size:13px}
+  .search-wrap{margin-left:0;flex:1}
+  .search-input{width:100%}
+  .hd-row2{gap:8px}
+  .progress-zone{margin-left:0;width:100%}
+  .pz-bar{flex:1;width:auto}
+  .pz-item{flex:1 1 46%}
+  main{padding:12px 12px 50px}
+  .sem-row{flex-direction:column;gap:8px}
+  .sem-label{flex:none;flex-direction:row;gap:10px;padding:8px 14px}
+  .sem-cards{grid-template-columns:repeat(auto-fill,minmax(158px,1fr));gap:8px}
+  .ucard{padding:11px 12px 24px}
+  #netSvg{height:62vh;min-height:380px}
+  #panel{top:auto;left:0;right:0;bottom:0;width:100%;height:82vh;transform:translateY(105%);
+    border-radius:18px 18px 0 0;box-shadow:0 -12px 40px rgba(107,68,35,.25)}
+  body.panel-open #panel{transform:none}
+  .p-head::before{content:"";position:absolute;top:7px;left:50%;transform:translateX(-50%);
+    width:40px;height:4px;border-radius:99px;background:var(--warm-gray)}
+  .kp-row{gap:8px}
+  .seg{width:100%;display:grid;grid-template-columns:repeat(4,1fr)}
+  .seg button{padding:9px 4px;font-size:12.5px}
+  .net-tools button{width:44px;height:44px}
+}
+@media (prefers-reduced-motion:reduce){
+  *{transition:none!important;animation:none!important}
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="hd-row">
+    <div class="hd-title">东莞中考数学<em>知识地图</em></div>
+    <nav class="tabs" id="tabs">
+      <button class="tab-btn active" data-view="grid">方格总览图</button>
+      <button class="tab-btn" data-view="net">知识网格图</button>
+      <button class="tab-btn" data-view="check">自检清单</button>
+    </nav>
+    <div class="search-wrap">
+      <input class="search-input" id="searchInput" type="search" placeholder="搜索知识点 / 单元…" autocomplete="off">
+      <div class="search-drop" id="searchDrop"></div>
+    </div>
+  </div>
+  <div class="hd-row2">
+    <div class="filters">
+      <select id="fGrade"><option value="">全部年级</option><option>七年级</option><option>八年级</option><option>九年级</option></select>
+      <select id="fModule"><option value="">全部模块</option><option>代数</option><option>几何</option><option>统计概率</option></select>
+      <select id="fFreq"><option value="">全部考频</option><option value="high">高频（5★）</option><option value="mid">中频（3~4★）</option><option value="low">低频（1~2★）</option></select>
+    </div>
+    <div class="progress-zone">
+      <div class="pz-item"><span class="pz-label">已自检进度</span><div class="pz-bar"><div class="pz-fill c1" id="barChecked"></div></div><span class="pz-num" id="numChecked">0%</span></div>
+      <div class="pz-item"><span class="pz-label">熟练掌握进度</span><div class="pz-bar"><div class="pz-fill c2" id="barMaster"></div></div><span class="pz-num" id="numMaster">--</span></div>
+    </div>
+  </div>
+</header>
+
+<main>
+  <section class="view active" id="view-grid">
+    <div class="legend">
+      <span><b>模块配色</b></span>
+      <span><i class="dot" style="background:var(--m-alg)"></i>代数·暖棕</span>
+      <span><i class="dot" style="background:var(--m-geo)"></i>几何·橄榄绿</span>
+      <span><i class="dot" style="background:var(--m-stat)"></i>统计概率·暖橙</span>
+      <span><b>标识</b></span>
+      <span><span style="color:var(--gold1)">★</span> 中考高频单元</span>
+      <span>▦粗边框=重难点</span><span>▢虚线框=易错</span>
+    </div>
+    <div id="gridBox"></div>
+  </section>
+
+  <section class="view" id="view-net">
+    <div class="legend">
+      <span><b>连线</b></span>
+      <span><span style="color:#B08A63">━━▶</span> 学习先后依赖</span>
+      <span><span style="color:var(--olive)">┅┅</span> 跨模块综合关联</span>
+      <span><b>多边形色块</b>=知识单元领地（点击打开详情）</span>
+      <span><b>节点</b> 大小=考频星级</span>
+      <span><span style="color:var(--gold1)">★</span>高频 <span style="color:var(--brown)">◆</span>重难点 <span style="color:#8C3A20">▲</span>易错</span>
+    </div>
+    <div class="net-wrap">
+      <svg id="netSvg" xmlns="http://www.w3.org/2000/svg"></svg>
+      <div class="net-tools">
+        <button id="zoomIn" title="放大">＋</button>
+        <button id="zoomOut" title="缩小">－</button>
+        <button id="zoomReset" title="复位">⟳</button>
+        <button id="lblToggle" title="显示/隐藏全部知识点标签">🏷</button>
+      </div>
+      <div class="net-hint">拖拽平移 · 滚轮/双指缩放 · 放大自动显示更多标签 · 点击节点看详情</div>
+    </div>
+  </section>
+
+  <section class="view" id="view-check">
+    <div class="ck-toolbar">
+      <div class="ck-note" id="storeNote"></div>
+      <button class="btn btn-pri" id="btnExport">⬇ 导出进度</button>
+      <button class="btn btn-sec" id="btnImport">⬆ 导入进度</button>
+      <button class="btn btn-sec" id="btnPng">🖨 导出空白清单 PNG</button>
+      <input type="file" id="fileInput" accept=".json,application/json" hidden>
+    </div>
+    <div class="mod-stats" id="modStats"></div>
+    <details class="weak-box" open>
+      <summary>⚠ 薄弱知识点清单（未掌握 + 高频考点）</summary>
+      <div class="weak-list" id="weakList"></div>
+    </details>
+    <div id="checkBox"></div>
+  </section>
+</main>
+
+<div id="panelMask"></div>
+<aside id="panel">
+  <div class="p-head">
+    <div class="p-title serif" id="pTitle"></div>
+    <div class="p-sub" id="pSub"></div>
+    <button class="p-close" id="pClose" title="关闭">✕</button>
+  </div>
+  <div class="p-body" id="pBody"></div>
+</aside>
+
+<div id="tip"></div>
+<div id="toast"></div>
+
+<script>
+const DATA = {"meta":{"title":"东莞中考数学知识地图","build":"2026-09-28","examNote":"基于近5年东莞中考真题估算（非官方分值占比）","traceNote":"真题溯源：待核验——因无法在线核验历年东莞中考真题的题号与分值，本清单留待对照官方公布真题自行补充，绝不臆测填充。","storeNote":"自检记录仅保存在当前浏览器本地存储（localStorage）。清除浏览器数据、更换浏览器或设备会导致记录丢失；可用下方「导出进度」手动备份，在其他设备「导入进度」恢复。不支持云端自动同步。"},"units":[{"id":"U7-1","name":"有理数","sem":"七年级上册","semIdx":0,"grade":"七年级","yearTag":"初一基础","module":"代数","tags":["易错"],"freq":{"times":"约8~10题次","score":"约8~10分"},"defi":["正数与负数：具有相反意义的量，用正负数表示；0 既不是正数也不是负数。","有理数分类：整数（正整数、0、负整数）与分数（正分数、负分数）统称有理数。","数轴三要素：原点、正方向、单位长度；数轴上的点与有理数一一对应（比较大小：左小右大）。","相反数：只有符号不同的两个数，a 的相反数是 -a；互为相反数的两数之和为 0。","绝对值：数轴上表示数 a 的点到原点的距离，记作 |a|，|a|≥0（非负性）。","有理数运算法则：加法先定符号再定绝对值；减法转化为加法；乘除同号得正、异号得负；乘方是相同因数的积。","科学记数法：a×10ⁿ（1≤|a|<10，n 为整数）；近似数按精确度四舍五入。"],"formulas":["|a| = a（a>0）；|a| = 0（a=0）；|a| = -a（a<0）","a - b = a + (-b)；a ÷ b = a × 1/b（b≠0）","aⁿ = a×a×…×a（n 个 a）；(-1)ⁿ：n 偶为 1，n 奇为 -1","科学记数法：N = a×10ⁿ（1≤a<10），n = 整数位数 - 1"],"example":{"src":"原创模拟题（对标东莞中考题型）","prob":"计算：-1²⁰²⁴ + |-2-3| × (-2)² ÷ (-4)。","sol":"原式 = -1 + 5 × 4 ÷ (-4) = -1 + 20 ÷ (-4) = -1 + (-5) = -6。\n关键点：-1²⁰²⁴ = -(1²⁰²⁴) = -1（指数不带括号时先算乘方再加负号）；|-2-3| = 5；(-2)² = 4；同级运算从左到右，乘除先定符号。"},"pitfalls":["-2² 与 (-2)² 混淆：前者 = -4，后者 = 4，看指数管不管负号。","化简绝对值忘记分类讨论：|a-b| 要先判断 a 与 b 的大小再脱绝对值号。","科学记数法中 n 数错：n = 原数整数位数 - 1，小数向左移几位 n 就是负几。"],"tech":["数形结合：比较大小、化简绝对值先画数轴定位。","混合运算口诀：先乘方、再乘除、后加减，有括号先括号；每一步先定符号。","特殊值法：字母比较大小题，取 0、1、-1 等特殊值快速排除。"],"kpIds":["K7-1-01","K7-1-02","K7-1-03","K7-1-04"]},{"id":"U7-2","name":"整式的加减","sem":"七年级上册","semIdx":0,"grade":"七年级","yearTag":"初一基础","module":"代数","tags":[],"freq":{"times":"约6~8题次","score":"约4~6分"},"defi":["单项式：数与字母的积；系数是数字因数，次数是所有字母指数之和。","多项式：几个单项式的和；次数取最高次项的次数，有几项就叫几项式。","同类项：所含字母相同，且相同字母的指数也相同（与系数、字母顺序无关）。","合并同类项：系数相加，字母及其指数不变。","去括号法则：括号前是“+”号，去括号后各项不变号；括号前是“-”号，各项都变号。","整式加减实质：去括号 + 合并同类项，结果一般按某字母降幂排列。"],"formulas":["a + (b + c) = a + b + c；a - (b + c) = a - b - c","添括号：a + b + c = a + (b + c)；a - b - c = a - (b + c)","合并同类项：ma + na = (m + n)a"],"example":{"src":"原创模拟题（对标东莞中考题型）","prob":"已知 A = 2x² - 3x + 1，B = x² + 2x - 5。先化简 2A - 3B，再求当 x = -1 时的值。","sol":"2A - 3B = 2(2x²-3x+1) - 3(x²+2x-5) = 4x²-6x+2 - 3x²-6x+15 = x² - 12x + 17。\n当 x = -1 时，原式 = 1 + 12 + 17 = 30。\n关键点：-3B 去括号时每一项都要变号；化简求值必须先化简再代入。"},"pitfalls":["去括号漏乘：-2(x-3) 错写成 -2x-3，正确为 -2x+6，括号外因数要乘每一项。","判断同类项只看字母不看指数：2x²y 与 3xy² 不是同类项。","“与某字母无关”问题：该字母的系数（合并后）为 0，常用来求参数。"],"tech":["化简求值题一律“先化简、后代入”，代入负数、分数要加括号。","整体思想：把某个多项式看成一个整体代入，避免重复展开。","降幂排列后再合并，检查项数与次数防漏项。"],"kpIds":["K7-2-01","K7-2-02","K7-2-03","K7-2-04"]},{"id":"U7-3","name":"一元一次方程","sem":"七年级上册","semIdx":0,"grade":"七年级","yearTag":"初一基础","module":"代数","tags":["高频"],"freq":{"times":"约8~10题次","score":"约5~8分"},"defi":["方程：含有未知数的等式；方程的解：使方程左右两边相等的未知数的值。","一元一次方程：只含一个未知数，且未知数次数为 1，一般形式 ax + b = 0（a≠0）。","等式性质1：两边加（减）同一个数（式子），结果仍相等。","等式性质2：两边乘同一个数，或除以同一个不为 0 的数，结果仍相等。","解方程步骤：去分母 → 去括号 → 移项 → 合并同类项 → 系数化为 1。","列方程解应用题：审 → 设 → 列 → 解 → 验 → 答，关键是找等量关系。"],"formulas":["若 a = b，则 a ± c = b ± c","若 a = b，则 ac = bc；若 a = b（c≠0），则 a/c = b/c","ax + b = 0（a≠0）⇒ x = -b/a"],"example":{"src":"原创模拟题（对标东莞中考题型）","prob":"某商店购进一批文具盒，按进价提高 40% 标价，再打九折出售，每个仍可获利 13 元。求每个文具盒的进价。","sol":"设进价为 x 元。标价为 (1+40%)x = 1.4x，售价为 1.4x × 0.9 = 1.26x。\n由获利列方程：1.26x - x = 13，解得 0.26x = 13，x = 50。\n答：每个文具盒进价 50 元。检验：1.26×50 = 63，63-50 = 13 ✓。"},"pitfalls":["去分母时漏乘没有分母的项：方程两边每一项都要乘最简公分母。","移项不变号：从等号一边移到另一边必须变号。","应用题设元不带单位、答非所问：设句写清“设……为 x（单位）”，答句回扣问题。"],"tech":["应用题找等量关系三招：抓关键词（共、比、多、少）、列表格、画线段图。","行程问题画线段图；工程问题设工作总量为 1；销售问题分清进价、标价、售价、利润。","解完必须检验：代入原方程或对照实际意义（人数、件数为正整数等）。"],"kpIds":["K7-3-01","K7-3-02","K7-3-03"]},{"id":"U7-4","name":"几何图形初步","sem":"七年级上册","semIdx":0,"grade":"七年级","yearTag":"初一基础","module":"几何","tags":[],"freq":{"times":"约5~7题次","score":"约3~6分"},"defi":["几何图形：立体图形（柱、锥、球等）与平面图形；点动成线、线动成面、面动成体。","直线、射线、线段：直线无端点，射线一个端点，线段两个端点；两点确定一条直线。","两点之间线段最短；两点间线段的长度叫两点间的距离。","线段中点：把线段分成两条相等线段的点，AM = MB = ½AB。","角：有公共端点的两条射线；度量单位度分秒，1°=60′，1′=60″。","角平分线：从顶点出发把角分成两个相等角的射线。","余角与补角：和为 90° 互余，和为 180° 互补；同角（等角）的余角相等、补角相等。"],"formulas":["1° = 60′，1′ = 60″；1° = 3600″","中点：AM = MB = ½AB；角平分线：∠AOC = ∠COB = ½∠AOB","α 的余角 = 90° - α；α 的补角 = 180° - α"],"example":{"src":"原创模拟题（对标东莞中考题型）","prob":"已知 ∠AOB = 120°，射线 OC 在 ∠AOB 内部，OM 平分 ∠AOC，ON 平分 ∠BOC，求 ∠MON 的度数。","sol":"∠MON = ∠MOC + ∠NOC = ½∠AOC + ½∠BOC = ½(∠AOC + ∠BOC) = ½∠AOB = 60°。\n关键点：“双角平分线夹角 = 大角的一半”，与 OC 位置无关，这是常考结论。"},"pitfalls":["度分秒换算按 60 进制，不是 100 进制：0.5° = 30′，不是 5′。","线段计算漏分类讨论：点的位置在线段上还是延长线上，常有两解。","互余、互补只看数量关系，与位置无关，不要和“相邻”捆绑理解。"],"tech":["角度计算设未知数列方程，把几何条件翻译成代数方程。","遇中点想“两半相等”，遇角平分线想“两角相等”，先标图再计算。","位置不确定时主动分类讨论，画出两种情形分别求解。"],"kpIds":["K7-4-01","K7-4-02","K7-4-03","K7-4-04"]},{"id":"U7-5","name":"相交线与平行线","sem":"七年级下册","semIdx":1,"grade":"七年级","yearTag":"初一基础","module":"几何","tags":["高频"],"freq":{"times":"约8~10题次","score":"约4~8分"},"defi":["对顶角相等；邻补角之和为 180°。","垂线：夹角为 90°；垂线段最短；点到直线的距离是垂线段的长度。","三线八角：同位角、内错角、同旁内角的识别（“F、Z、U”形）。","平行线判定：同位角相等 / 内错角相等 / 同旁内角互补 ⇒ 两直线平行。","平行线性质：两直线平行 ⇒ 同位角相等、内错角相等、同旁内角互补。","命题与定理：题设 + 结论；真命题需证明，假命题举反例。","平移：图形沿某方向移动一定距离，对应线段平行且相等，对应角相等。"],"formulas":["判定⇄性质互逆：角的关系 ⇔ 线的平行","两直线平行，同位角相等、内错角相等、同旁内角互补（和为 180°）"],"example":{"src":"原创模拟题（对标东莞中考题型）","prob":"如图，AB∥CD，点 P 在 AB 与 CD 之间，连接 EP、FP（E 在 AB 上，F 在 CD 上）。若 ∠BEP = 30°，∠DFP = 45°，求 ∠EPF 的度数。","sol":"过点 P 作 PM∥AB。因为 AB∥CD，所以 PM∥AB∥CD。\n由 AB∥PM 得 ∠EPM = ∠BEP = 30°（内错角）；由 PM∥CD 得 ∠FPM = ∠DFP = 45°（内错角）。\n所以 ∠EPF = 30° + 45° = 75°。\n关键点：拐点问题过拐点作已知直线的平行线，是东莞中考常考辅助线模型。"},"pitfalls":["三线八角找错截线：先确定“截线”，两角共线的边所在直线即截线。","判定与性质混用：由角关系推平行是判定，由平行推角关系是性质，书写时注明依据。","同旁内角是“互补”不是“相等”，与同位角、内错角区分。"],"tech":["拐点模型：铅笔头（角相加）、锯齿形（左右角分组相等），过拐点作平行线。","标角法：把已知角、所求角全部标在图上，用箭头追踪平行线传递关系。","证明平行先找角；证明角等先找平行，两条思路双向尝试。"],"kpIds":["K7-5-01","K7-5-02","K7-5-03","K7-5-04","K7-5-05"]},{"id":"U7-6","name":"实数","sem":"七年级下册","semIdx":1,"grade":"七年级","yearTag":"初一基础","module":"代数","tags":[],"freq":{"times":"约5~7题次","score":"约3~6分"},"defi":["算术平方根：x² = a（a≥0）的正根 x，记作 √a；0 的算术平方根是 0。","平方根：x² = a，则 x = ±√a（a>0 时两个，互为相反数）；负数没有平方根。","立方根：x³ = a，则 x = ³√a；任何实数都有唯一立方根。","无理数：无限不循环小数（π、√2、0.1010010001…等）。","实数：有理数与无理数统称实数；实数与数轴上的点一一对应。","实数运算：有理数运算法则、运算律同样适用；√a 具有双重非负性（a≥0 且 √a≥0）。"],"formulas":["(±√a)² = a（a≥0）；√a² = |a|","³√a³ = a；(³√a)³ = a","√a ≥ 0（a ≥ 0）——非负性"],"example":{"src":"原创模拟题（对标东莞中考题型）","prob":"计算：√16 + ³√(-27) - |1 - √2| + √2。","sol":"原式 = 4 + (-3) - (√2 - 1) + √2 = 4 - 3 - √2 + 1 + √2 = 2。\n关键点：1 - √2 < 0，所以 |1-√2| = √2 - 1，去绝对值先判断符号；³√(-27) = -3，负数有立方根。"},"pitfalls":["√a² = |a| 而不是 a：a 为负时 √a² = -a，必须加绝对值再讨论。","算术平方根与平方根混淆：9 的平方根是 ±3，算术平方根只有 3。","无理数识别错误：带根号不一定是无理数（√4 = 2 是有理数）。"],"tech":["夹逼法估算：√13 在 3 和 4 之间，再精确定位到十分位。","非负性组合：√a + |b| + c² = 0 ⇒ 三者同时为 0，常考求字母值。","实数混合运算顺序同有理数，含根号的先化简各根式。"],"kpIds":["K7-6-01","K7-6-02","K7-6-03","K7-6-04"]},{"id":"U7-7","name":"平面直角坐标系","sem":"七年级下册","semIdx":1,"grade":"七年级","yearTag":"初一基础","module":"代数","tags":[],"freq":{"times":"约4~6题次","score":"约3分"},"defi":["有序数对 (a, b)：顺序不同表示不同位置。","象限符号：第一象限 (+,+)，第二 (-,+)，第三 (-,-)，第四 (+,-)。","坐标轴上的点：x 轴上 y = 0，y 轴上 x = 0，原点是 (0,0)；坐标轴不属于任何象限。","点 P(x, y) 到 x 轴的距离 = |y|，到 y 轴的距离 = |x|。","平移的坐标变化：右移 a 个单位 (x+a, y)，左减；上移 b (x, y+b)，下减。","对称点坐标：关于 x 轴 (x,-y)，关于 y 轴 (-x,y)，关于原点 (-x,-y)。"],"formulas":["P(x,y) 到 x 轴距离 = |y|，到 y 轴距离 = |x|","关于 x 轴对称：(x, -y)；关于 y 轴：(-x, y)；关于原点：(-x, -y)","平移：左右变 x（左减右加），上下变 y（上加下减）"],"example":{"src":"原创模拟题（对标东莞中考题型）","prob":"已知点 P(2m+4, m-1) 到 x 轴的距离为 3，求点 P 的坐标。","sol":"到 x 轴的距离是纵坐标的绝对值：|m - 1| = 3，解得 m = 4 或 m = -2。\n当 m = 4 时，P(12, 3)；当 m = -2 时，P(0, -3)。\n关键点：距离带绝对值必有两解，逐一回代求横坐标，不能漏解。"},"pitfalls":["点到 x 轴的距离是 |y| 不是 |x|，到 y 轴同理，容易记反。","平移方向与符号记错：向右 x 加、向左 x 减；向上 y 加、向下 y 减。","忽视绝对值导致漏解：由距离条件求坐标一般有两个答案。"],"tech":["数形结合：涉及距离、对称先画坐标系标点。","口诀“右加左减、上加下减”用于图象平移；点的对称“关于谁对称谁不变”。","由距离列方程时写成绝对值方程，再分类求解。"],"kpIds":["K7-7-01","K7-7-02","K7-7-03"]},{"id":"U7-8","name":"二元一次方程组","sem":"七年级下册","semIdx":1,"grade":"七年级","yearTag":"初一基础","module":"代数","tags":["高频"],"freq":{"times":"约7~9题次","score":"约5~8分"},"defi":["二元一次方程：含两个未知数，含未知数项的次数都是 1。","方程组的解：同时满足两个方程的两个未知数的值。","代入消元法：用一个未知数表示另一个，代入另一方程消元。","加减消元法：把某一未知数的系数变成相同或相反，相加（减）消元。","列方程组解应用题：设两个未知数，找两个独立等量关系。"],"formulas":["消元思想：二元 → 一元","加减消元：系数相等相减，系数相反相加","应用：利润 = 售价 - 成本；总量 = 单量 × 份数"],"example":{"src":"原创模拟题（对标东莞中考题型）","prob":"某班级购买奖品，买 3 本笔记本和 5 支笔共需 34 元；买 5 本笔记本和 3 支笔共需 30 元。求笔记本和笔的单价。","sol":"设笔记本 x 元/本，笔 y 元/支。\n3x + 5y = 34 ①；5x + 3y = 30 ②。\n①+②：8x + 8y = 64 ⇒ x + y = 8 ③；②-①：2x - 2y = -4 ⇒ x - y = -2 ④。\n③+④：2x = 6 ⇒ x = 3；代入③：y = 5。\n答：笔记本 3 元/本，笔 5 元/支。检验：3×3+5×5 = 34 ✓。"},"pitfalls":["加减消元时某一项漏乘：方程两边每一项都要乘同一个数。","应用题两个等量关系找重或找错，导致列出“假两个方程”（实质同解）。","解出后不检验实际意义（单价、人数应为正数/整数）。"],"tech":["系数有倍数关系优先加减消元；某方程系数为 1 时代入消元更快。","整体加减：两式相加/减直接得 x+y 或 x-y，绕开单独求解，压轴小题常用。","方案比较问题：分别列出各方案费用表达式，用方程或不等式比较。"],"kpIds":["K7-8-01","K7-8-02","K7-8-03"]},{"id":"U7-9","name":"不等式与不等式组","sem":"七年级下册","semIdx":1,"grade":"七年级","yearTag":"初一基础","module":"代数","tags":["易错"],"freq":{"times":"约6~8题次","score":"约4~8分"},"defi":["不等式性质1：两边加（减）同一个数（式子），不等号方向不变。","不等式性质2：两边乘（除以）同一个正数，方向不变。","不等式性质3：两边乘（除以）同一个负数，不等号方向改变。","解集在数轴上表示：大于向右、小于向左；含等号用实心点，不含用空心圈。","不等式组的解集：各不等式解集的公共部分（同大取大、同小取小、大小小大中间找、大大小小无解）。","应用：方案设计、至多至少问题，抓住“不超过、不少于”等关键词列不等式。"],"formulas":["a > b ⇒ a ± c > b ± c","a > b，c > 0 ⇒ ac > bc；a > b，c < 0 ⇒ ac < bc","解集口诀：同大取大，同小取小，大小小大取中间，大大小小无解"],"example":{"src":"原创模拟题（对标东莞中考题型）","prob":"解不等式组：2x - 1 > 3 ①；(x-2)/2 ≤ (1+x)/3 ②，并写出它的所有整数解。","sol":"由①：2x > 4，x > 2。\n由②：两边乘 6 得 3(x-2) ≤ 2(1+x)，3x - 6 ≤ 2 + 2x，x ≤ 8。\n所以解集为 2 < x ≤ 8，整数解为 3、4、5、6、7、8，共 6 个。\n关键点：端点取舍——x > 2 不含 2，x ≤ 8 含 8；数轴上空心、实心画对再数整数。"},"pitfalls":["两边乘（除以）负数忘记变号，是中考最高频失分点之一。","数轴上空心圈与实心点标错，导致整数解多数或漏数端点。","“不超过”“至少”翻译错：不超过 = ≤，至少 = ≥。"],"tech":["求整数解先画数轴确定区间，再逐个列出端点附近的整数验证。","含参不等式组：先解出用参数表示的解集，再由整数解个数反推参数范围，临界值单独验证。","方案问题列不等式后，实际意义（整数、非负）常常决定最终答案。"],"kpIds":["K7-9-01","K7-9-02","K7-9-03","K7-9-04"]},{"id":"U7-10","name":"数据的收集、整理与描述","sem":"七年级下册","semIdx":1,"grade":"七年级","yearTag":"初一基础","module":"统计概率","tags":[],"freq":{"times":"约5~7题次","score":"约6~8分"},"defi":["全面调查与抽样调查：对象少、要求精确用全面调查；对象多、有破坏性用抽样调查。","总体、个体、样本、样本容量：样本容量没有单位。","频数：落在各组的数据个数；频率 = 频数 ÷ 总数，各组频率之和为 1。","条形图：显示具体数量；折线图：显示变化趋势；扇形图：显示部分占整体的百分比。","频数分布直方图：分组连续、无间隔；可据此估计总体分布。"],"formulas":["频率 = 频数 ÷ 数据总数","扇形圆心角 = 360° × 该部分所占比例","样本估计总体：总体数量 ≈ 样本比例 × 总体容量"],"example":{"src":"原创模拟题（对标东莞中考题型）","prob":"某校抽查 50 名学生最喜爱的球类运动：篮球 20 人、足球 15 人、羽毛球 10 人、其他 5 人。在扇形统计图中，求“足球”所对应的圆心角度数；若全校有 1200 名学生，估计最喜爱篮球的人数。","sol":"足球圆心角 = 360° × 15/50 = 108°。\n估计喜爱篮球人数 = 1200 × 20/50 = 480（人）。\n关键点：圆心角用“360° × 比例”；样本估计总体用“总数 × 样本比例”。"},"pitfalls":["样本容量带单位是典型错误：容量是 50，不是 50 人。","圆心角计算用错基数：必须用 360° 乘比例，不是 180°。","直方图与条形图混淆：直方图横轴是连续分组，矩形之间无空隙。"],"tech":["双图互补：条形图给数量、扇形图给比例，先用“数量 ÷ 比例”求总数再补全两图。","补图题顺序：总数 → 各组频数 → 频率 → 圆心角，按链条逐项回填。","估计总体时写清“约”“估计”，体现样本到总体的推断。"],"kpIds":["K7-10-01","K7-10-02","K7-10-03"]},{"id":"U8-1","name":"三角形","sem":"八年级上册","semIdx":2,"grade":"八年级","yearTag":"初二分化","module":"几何","tags":[],"freq":{"times":"约6~8题次","score":"约3~6分"},"defi":["三角形三边关系：任意两边之和大于第三边，任意两边之差小于第三边。","三角形内角和定理：三个内角的和等于 180°。","三角形外角性质：外角等于与它不相邻的两个内角的和；外角大于任何一个不相邻内角。","三角形的重要线段：高、中线、角平分线（三条中线分面积相等，重心性质了解）。","多边形内角和：(n-2)·180°；任意多边形外角和恒为 360°。","正多边形每个内角 = (n-2)·180°/n；每个外角 = 360°/n。"],"formulas":["三边关系：|a - b| < c < a + b","内角和：∠A + ∠B + ∠C = 180°；外角 = 不相邻两内角之和","多边形内角和 = (n-2)×180°；外角和 = 360°","n 边形对角线条数 = n(n-3)/2"],"example":{"src":"原创模拟题（对标东莞中考题型）","prob":"一个多边形的内角和是其外角和的 3 倍，求这个多边形的边数。","sol":"设边数为 n。内角和 (n-2)×180°，外角和 360°。\n列方程：(n-2)×180 = 3×360，解得 n - 2 = 6，n = 8。\n答：这个多边形是八边形。\n关键点：任何多边形外角和都是 360°，与边数无关，这是列方程的固定桥梁。"},"pitfalls":["已知两边求第三边范围后，必须验证三边关系（尤其等腰三角形分类讨论时）。","钝角三角形的高在形外，作高时容易画错、找错底边。","外角性质“不相邻”三个字易忽略，外角不等于任意两个内角之和。"],"tech":["8 字模型、飞镖模型：凹四边形中凹角 = 三个角之和，秒杀复杂角度计算。","角度计算设 x 列方程，内角和、外角性质是列方程的两大等量来源。","求边数先求外角：正多边形看外角 360°/n 更快捷。"],"kpIds":["K8-1-01","K8-1-02","K8-1-03","K8-1-04"]},{"id":"U8-2","name":"全等三角形","sem":"八年级上册","semIdx":2,"grade":"八年级","yearTag":"初二分化","module":"几何","tags":["高频","重难点"],"freq":{"times":"约10~12题次","score":"约6~10分"},"defi":["全等三角形：能够完全重合的两个三角形；对应边相等、对应角相等。","判定：SSS、SAS、ASA、AAS；直角三角形特有 HL（斜边、直角边）。","注意：SSA（边边角）、AAA 不能判定全等。","角平分线的性质：角平分线上的点到角两边的距离相等。","角平分线的判定：角的内部到角两边距离相等的点在角平分线上。","书写规范：对应顶点写在对应位置（△ABC≌△DEF）。"],"formulas":["判定四法 + 一直：SSS / SAS / ASA / AAS / HL","全等 ⇒ 对应边相等、对应角相等、周长相等、面积相等","角平分线 ⇒ 线上点到两边距离相等（需作垂线段）"],"example":{"src":"原创模拟题（对标东莞中考题型）","prob":"如图，点 E、F 在线段 BC 上，AB = DC，∠B = ∠C，BE = CF。求证：△ABF ≌ △DCE。","sol":"证明：∵ BE = CF，∴ BE + EF = CF + EF，即 BF = CE。\n在 △ABF 和 △DCE 中：AB = DC（已知），∠B = ∠C（已知），BF = CE（已证）。\n∴ △ABF ≌ △DCE（SAS）。\n关键点：共线段的“等线段加同段”是找对应边的经典套路；注意 F 与 C、B 与 E 的对应关系。"},"pitfalls":["把 SSA 当判定用：两边及其中一边对角相等不能保证全等，中考常设陷阱。","对应顶点写错顺序，导致后续对应边、对应角全部错位。","忽视隐含条件：公共边、公共角、对顶角、同（等）角的余（补）角相等。"],"tech":["标图三件套：等边画同记号、等角标同弧线、已知条件全部上图。","截长补短：证 a = b + c 型结论，在长线段上截取或延长补短构造全等。","倍长中线：遇中线想倍长，把分散条件集中到一个三角形中。","角平分线问题向两边作垂线，直接转化“距离相等”。"],"kpIds":["K8-2-01","K8-2-02","K8-2-03","K8-2-04"]},{"id":"U8-3","name":"轴对称","sem":"八年级上册","semIdx":2,"grade":"八年级","yearTag":"初二分化","module":"几何","tags":["高频"],"freq":{"times":"约7~9题次","score":"约4~8分"},"defi":["轴对称图形：沿一条直线折叠后两旁部分能够完全重合；对称轴是对应点连线的垂直平分线。","垂直平分线性质：线上点到线段两端距离相等；判定：到两端距离相等的点在垂直平分线上。","等腰三角形性质：等边对等角；三线合一（顶角平分线、底边中线、底边上的高重合）。","等腰三角形判定：等角对等边。","等边三角形：三边相等、三角都是 60°；有一个角是 60° 的等腰三角形是等边三角形。","含 30° 角的直角三角形：30° 角所对的直角边等于斜边的一半。","最短路径（将军饮马）：利用轴对称把折线转化为直线段求最小值。"],"formulas":["等腰三角形顶角 = 180° - 2×底角","30° 所对直角边 = ½ 斜边","垂直平分线 ⇒ PA = PB"],"example":{"src":"原创模拟题（对标东莞中考题型）","prob":"一个等腰三角形的两边长分别为 4 和 9，求它的周长。","sol":"分类讨论：\n① 若腰长为 4，则三边为 4、4、9，但 4 + 4 < 9，不满足三边关系，舍去；\n② 若腰长为 9，则三边为 9、9、4，满足 4 + 9 > 9，周长 = 9 + 9 + 4 = 22。\n答：周长为 22。\n关键点：等腰三角形给两边必须分类，且每种情况都要用三边关系检验，这是中考经典易错题。"},"pitfalls":["等腰三角形“腰、底”不确定时不分类讨论，或分类后忘记三边关系检验。","垂直平分线与角平分线张冠李戴：前者到两端点距离等，后者到两边距离等。","“轴对称”指两个图形的关系，“轴对称图形”指一个图形，概念混用会丢分。"],"tech":["将军饮马：作对称点把“两定一动”折线最值化为两点之间线段最短。","等腰三角形遇“三线”想合一，底边中点是高频辅助点。","角度问题用方程：设底角为 x，顶角 180° - 2x，结合外角列方程。"],"kpIds":["K8-3-01","K8-3-02","K8-3-03","K8-3-04"]},{"id":"U8-4","name":"整式的乘法与因式分解","sem":"八年级上册","semIdx":2,"grade":"八年级","yearTag":"初二分化","module":"代数","tags":["高频"],"freq":{"times":"约10~12题次","score":"约6~10分"},"defi":["幂的运算：同底数幂相乘（除）底数不变指数相加（减）；幂的乘方指数相乘；积的乘方分别乘方。","a⁰ = 1（a≠0）；a⁻ᵖ = 1/aᵖ（a≠0）。","单项式乘（除以）单项式、单项式乘多项式、多项式乘多项式的运算法则。","平方差公式与完全平方公式：结构特征要认准（两项、符号、2ab 项）。","因式分解：把一个多项式化成几个整式积的形式；与整式乘法互为逆运算。","分解步骤：一提（公因式）二套（公式）三查（是否彻底）。"],"formulas":["aᵐ·aⁿ = aᵐ⁺ⁿ；aᵐ÷aⁿ = aᵐ⁻ⁿ；(aᵐ)ⁿ = aᵐⁿ；(ab)ⁿ = aⁿbⁿ","a⁰ = 1（a≠0）；a⁻ᵖ = 1/aᵖ","(a+b)(a-b) = a² - b²","(a±b)² = a² ± 2ab + b²"],"example":{"src":"原创模拟题（对标东莞中考题型）","prob":"先化简，再求值：(2x+1)² - (2x+3)(2x-3)，其中 x = -½。","sol":"原式 = (4x² + 4x + 1) - (4x² - 9) = 4x² + 4x + 1 - 4x² + 9 = 4x + 10。\n当 x = -½ 时，原式 = 4×(-½) + 10 = -2 + 10 = 8。\n关键点：完全平方展开别漏 2ab 项；平方差 (2x+3)(2x-3) = (2x)² - 3² = 4x² - 9。"},"pitfalls":["完全平方公式漏掉中间 2ab 项：(a+b)² ≠ a² + b²。","因式分解不彻底：如 x⁴ - y⁴ 分解到 (x²+y²)(x²-y²) 就停，x²-y² 还可再分。","提公因式后括号内漏“1”：ab + a = a(b + 1)，不是 a·b。"],"tech":["公式逆用：a² + 2ab + b² 凑完全平方，用于配方求最值或化简。","整体思想：把 (x-y) 之类看作一个字母参与乘法公式运算。","分解顺序“一提二套三查”，查括号内能否继续分解到不能分为止。"],"kpIds":["K8-4-01","K8-4-02","K8-4-03","K8-4-04"]},{"id":"U8-5","name":"分式","sem":"八年级上册","semIdx":2,"grade":"八年级","yearTag":"初二分化","module":"代数","tags":["高频","易错"],"freq":{"times":"约9~11题次","score":"约6~10分"},"defi":["分式：A/B（B 中含字母且 B≠0）；有意义的条件是分母不为 0。","分式值为 0 的条件：分子 = 0 且分母 ≠ 0（两个条件缺一不可）。","分式的基本性质：分子分母同乘（除以）同一个不为 0 的整式，值不变。","约分与通分：先把分子分母因式分解，再约去（找出）公因式（最简公分母）。","分式运算：乘除先约分，加减先通分；结果化到最简。","分式方程：去分母化为整式方程，必须验根——使最简公分母为 0 的是增根，要舍去。"],"formulas":["B ≠ 0 时分式有意义；A/B = 0 ⇔ A = 0 且 B ≠ 0","A/B = (A·M)/(B·M) = (A÷M)/(B÷M)（M≠0）","a/b ÷ c/d = a/b × d/c","分式方程 → 整式方程 → 验根"],"example":{"src":"原创模拟题（对标东莞中考题型）","prob":"一项工程，甲队单独完成比乙队单独完成多用 10 天；两队合作 12 天恰好完成。求甲、乙两队单独完成各需多少天。","sol":"设乙队单独完成需 x 天，则甲队需 (x+10) 天。\n合作效率：1/x + 1/(x+10) = 1/12。\n去分母：12(x+10) + 12x = x(x+10)，化简得 x² - 14x - 120 = 0，\n因式分解 (x - 20)(x + 6) = 0，x = 20 或 x = -6（不合题意，舍去）。\n检验：x = 20 时最简公分母不为 0，是原方程的解。\n答：乙队 20 天，甲队 30 天。"},"pitfalls":["解分式方程忘记验根：增根必须舍去，这是东莞中考必设考查点。","值为 0 的条件只写分子 = 0，漏掉分母 ≠ 0。","去分母时漏乘不含分母的项，或通分时符号处理出错。"],"tech":["化简求值先因式分解再约分，代入的值还要保证原式分母不为 0。","分式方程应用题“双检验”：既验增根，又验实际意义。","设效率不如设时间：工程问题设天数、行程问题设速度，抓住总量 = 效率 × 时间。"],"kpIds":["K8-5-01","K8-5-02","K8-5-03","K8-5-04"]},{"id":"U8-6","name":"二次根式","sem":"八年级下册","semIdx":3,"grade":"八年级","yearTag":"初二分化","module":"代数","tags":[],"freq":{"times":"约5~7题次","score":"约3~6分"},"defi":["二次根式 √a：有意义的条件是被开方数 a ≥ 0。","性质：(√a)² = a（a≥0）；√a² = |a|。","最简二次根式：被开方数不含分母、不含能开得尽方的因数。","乘除：√a·√b = √(ab)，√a/√b = √(a/b)（a≥0，b>0）。","加减：先化为最简二次根式，再合并同类二次根式（被开方数相同）。"],"formulas":["(√a)² = a（a≥0）；√a² = |a|","√(ab) = √a·√b（a,b≥0）；√(a/b) = √a/√b（a≥0, b>0）","合并：m√a + n√a = (m+n)√a"],"example":{"src":"原创模拟题（对标东莞中考题型）","prob":"计算：√12 × √3 + (√5)² - √8 ÷ √2。","sol":"√12 × √3 = √36 = 6；(√5)² = 5；√8 ÷ √2 = √4 = 2。\n原式 = 6 + 5 - 2 = 9。\n关键点：乘除用性质先合再开，能一步到位化为整数；也可以先把各项化成最简根式再算。"},"pitfalls":["√a² = |a|：a < 0 时结果是 -a，直接写 a 是高频错误。","求字母取值范围漏掉复合条件：如 √(x-1)/(x-2) 需同时 x-1≥0 且 x-2≠0。","不是最简根式就参与加减：√8 + √2 要化成 2√2 + √2 = 3√2。"],"tech":["分母有理化：单项乘自身，多项乘共轭（√a+√b 配 √a-√b）。","非负性：√a、|b|、c² 之和为 0 ⇒ 各项同时为 0，常与绝对值、平方综合命题。","估算与比较：把根号外的因数平方后移入根号内统一比较。"],"kpIds":["K8-6-01","K8-6-02","K8-6-03"]},{"id":"U8-7","name":"勾股定理","sem":"八年级下册","semIdx":3,"grade":"八年级","yearTag":"初二分化","module":"几何","tags":["高频"],"freq":{"times":"约7~9题次","score":"约4~8分"},"defi":["勾股定理：直角三角形两直角边的平方和等于斜边的平方，a² + b² = c²。","勾股定理逆定理：若 a² + b² = c²，则这个三角形是直角三角形（c 为最大边）。","勾股数：满足 a² + b² = c² 的三个正整数，如 3、4、5；5、12、13；8、15、17。","应用：折叠问题、立体表面最短路径、实际测量（梯子、旗杆、航海）。"],"formulas":["a² + b² = c²（c 为斜边）","逆定理：a² + b² = c² ⇒ ∠C = 90°","常见勾股数：(3,4,5) (5,12,13) (8,15,17) (7,24,25) 及其倍数"],"example":{"src":"原创模拟题（对标东莞中考题型）","prob":"长方形纸片 ABCD 中，AB = 6 cm，BC = 8 cm。将纸片沿直线 EF 折叠，使点 C 与点 A 重合，点 E 在 BC 上。求 CE 的长。","sol":"设 CE = x cm，由折叠知 AE = CE = x，则 BE = (8 - x) cm。\n在 Rt△ABE 中，AB² + BE² = AE²：6² + (8 - x)² = x²，\n36 + 64 - 16x + x² = x²，解得 x = 100/16 = 25/4。\n答：CE = 25/4 cm。\n关键点：折叠⇒对应线段相等，设未知数后用勾股定理列方程，是中考高频套路。"},"pitfalls":["直角边、斜边不确定时不分类讨论：c 不一定是斜边，要看直角位置。","非直角三角形误用勾股定理：先用逆定理或已知条件确认直角。","折叠问题找不到相等线段：折叠前后对应边、对应角相等是列方程的根基。"],"tech":["折叠问题三步：标相等量 → 设 x → 在直角三角形中用勾股列方程。","立体表面最短路径：展开成平面图形，转化为两点之间线段最短。","网格中求线段长：构造直角三角形，横向纵向数格子得两直角边。"],"kpIds":["K8-7-01","K8-7-02","K8-7-03"]},{"id":"U8-8","name":"平行四边形","sem":"八年级下册","semIdx":3,"grade":"八年级","yearTag":"初二分化","module":"几何","tags":["高频","重难点"],"freq":{"times":"约9~11题次","score":"约6~10分"},"defi":["平行四边形性质：对边相等、对角相等、对角线互相平分。","平行四边形判定：两组对边分别平行（相等）；一组对边平行且相等；对角线互相平分。","三角形中位线：连接两边中点的线段平行于第三边且等于第三边的一半。","矩形：有一个角是直角的平行四边形；四角都是直角，对角线相等。","菱形：一组邻边相等的平行四边形；四边相等，对角线互相垂直且平分每组对角。","正方形：既是矩形又是菱形；判定先证矩形再证菱形（或反之）。","中点四边形：任意四边形各边中点连线构成平行四边形；对角线相等⇒菱形，垂直⇒矩形。"],"formulas":["中位线：DE = ½BC，DE∥BC","菱形面积 = ½ × d₁ × d₂（对角线乘积的一半）","矩形对角线相等且互相平分；菱形对角线互相垂直平分"],"example":{"src":"原创模拟题（对标东莞中考题型）","prob":"菱形 ABCD 的两条对角线 AC = 6，BD = 8。求菱形的面积和周长。","sol":"面积 S = ½ × AC × BD = ½ × 6 × 8 = 24。\n对角线互相垂直平分，所以半对角线为 3 和 4，边长 = √(3² + 4²) = 5，周长 = 4 × 5 = 20。\n关键点：菱形面积用对角线公式最快捷；边长用勾股定理由半对角线求得。"},"pitfalls":["判定条件记串：“一组对边平行且相等”才行，“一组对边平行另一组对边相等”可能是等腰梯形。","正方形判定跳步：直接说“对角线垂直的矩形是正方形”可以，但缺条件链会丢过程分。","中位线与中点混淆：中位线是两边中点的连线，不是顶点对中点的线段。"],"tech":["中点四边形模型：原四边形对角线决定中点四边形的形状（等⇒菱形，垂直⇒矩形，等且垂直⇒正方形）。","从对角线视角记判定：互相平分⇒平四；+相等⇒矩形；+垂直⇒菱形；+相等且垂直⇒正方形。","证明题倒推法：从结论出发找“还差什么条件”，再回到已知挖掘。"],"kpIds":["K8-8-01","K8-8-02","K8-8-03","K8-8-04"]},{"id":"U8-9","name":"一次函数","sem":"八年级下册","semIdx":3,"grade":"八年级","yearTag":"初二分化","module":"代数","tags":["高频","重难点"],"freq":{"times":"约11~13题次","score":"约8~12分"},"defi":["函数：两个变量 x、y，x 每取一个确定的值，y 都有唯一确定的值与之对应。","一次函数 y = kx + b（k≠0）；b = 0 时为正比例函数，图象必过原点。","图象与性质：k > 0 时 y 随 x 增大而增大；k < 0 时减小；b 是图象与 y 轴交点的纵坐标。","待定系数法：设解析式 → 代入两点坐标 → 解方程组求 k、b。","一次函数与二元一次方程组：两直线交点坐标 = 对应方程组的解。","一次函数与一元一次不等式：图象高低对应函数值大小，交点是分界。","应用：分段计费、方案选择、行程图象信息题。"],"formulas":["y = kx + b（k≠0）；k 定增减，b 定与 y 轴交点","k = (y₂ - y₁)/(x₂ - x₁)（两点求斜率）","交点 ⇔ 方程组的解；y₁ > y₂ ⇔ 图象在上方"],"example":{"src":"原创模拟题（对标东莞中考题型）","prob":"已知一次函数的图象经过点 (2, 5) 和 (-1, -4)。（1）求该函数的解析式；（2）求图象与 x 轴、y 轴的交点坐标。","sol":"（1）设 y = kx + b，代入两点：2k + b = 5，-k + b = -4。\n两式相减：3k = 9，k = 3；代入得 b = -1。∴ y = 3x - 1。\n（2）令 y = 0：3x - 1 = 0，x = 1/3，与 x 轴交于 (1/3, 0)；令 x = 0 得 y = -1，与 y 轴交于 (0, -1)。\n关键点：待定系数法是中考必考基本功，两方程相减消 b 最快。"},"pitfalls":["k 的符号与增减性记反：k < 0 时 y 随 x 增大而减小。","图象信息题看错横纵轴意义：行程图象中斜率是速度，水平段表示停留。","比较函数值大小忘记以交点为分界分段讨论。"],"tech":["待定系数法通吃：知道两点（或一点 + k）即可求解析式。","数形结合比较大小：画出两直线，同一 x 处谁在上谁大，交点横坐标是界。","分段函数按段写解析式、按段讨论，节点处注意归属（等号给哪段）。","行程图象抓三量：起点、拐点、终点，逐段解读方向与速度。"],"kpIds":["K8-9-01","K8-9-02","K8-9-03","K8-9-04","K8-9-05"]},{"id":"U8-10","name":"数据的分析","sem":"八年级下册","semIdx":3,"grade":"八年级","yearTag":"初二分化","module":"统计概率","tags":["高频"],"freq":{"times":"约8~10题次","score":"约6~8分"},"defi":["平均数：x̄ = (x₁+x₂+…+xₙ)/n；加权平均数中“权”反映数据的重要程度。","中位数：将数据按大小排序，奇数个取中间，偶数个取中间两数的平均数。","众数：一组数据中出现次数最多的数据（可以不止一个，也可以没有）。","方差：刻画数据波动大小，s² = 1/n[(x₁-x̄)² + … + (xₙ-x̄)²]。","方差越小，数据越稳定；方差越大，波动越大。","用样本估计总体：用样本平均数、方差推断总体水平与稳定性。"],"formulas":["加权平均数 x̄ = (x₁w₁ + x₂w₂ + …)/(w₁ + w₂ + …)","方差 s² = (1/n)Σ(xᵢ - x̄)²","数据 ±a：方差不变；数据 ×k：方差 ×k²"],"example":{"src":"原创模拟题（对标东莞中考题型）","prob":"甲、乙两名射击运动员各射击 5 次，成绩（环）如下：甲：7、8、8、9、8；乙：6、9、8、8、9。已知两人平均成绩均为 8 环，通过计算说明应选哪位运动员参赛更稳定。","sol":"s²甲 = [(7-8)² + 3×(8-8)² + (9-8)²]/5 = (1 + 0 + 0 + 0 + 1)/5 = 0.4。\ns²乙 = [(6-8)² + (8-8)²×2 + (9-8)²×2]/5 = (4 + 0 + 0 + 1 + 1)/5 = 1.2。\n∵ 0.4 < 1.2，∴ 甲成绩更稳定，应选甲参赛。\n关键点：平均数相同看方差，方差小者稳定；决策题必须“数据 + 结论”双落地。"},"pitfalls":["求中位数忘记先排序，直接取原数据中间的数。","加权平均数错用算术平均：各项要乘各自的权再求和。","方差比较时结论写反：方差小 = 稳定，方差大 = 波动大。"],"tech":["“三数一差”看问题角度：平均数看水平，中位数看中等，众数看多数，方差看稳定。","决策类题目先算后说：每个结论都要有计算支撑，切忌只凭感觉。","巧用性质：整组数据同时加一个数，平均数加这个数而方差不变，简化计算。"],"kpIds":["K8-10-01","K8-10-02","K8-10-03"]},{"id":"U9-1","name":"一元二次方程","sem":"九年级上册","semIdx":4,"grade":"九年级","yearTag":"初三综合","module":"代数","tags":["高频"],"freq":{"times":"约9~11题次","score":"约6~10分"},"defi":["一元二次方程：只含一个未知数且最高次为 2，一般形式 ax² + bx + c = 0（a≠0）。","解法：直接开平方法、配方法、公式法、因式分解法（能分解优先分解）。","根的判别式 Δ = b² - 4ac：Δ>0 两不等实根；Δ=0 两相等实根；Δ<0 无实数根。","根与系数的关系（韦达定理）：x₁ + x₂ = -b/a，x₁·x₂ = c/a。","应用：平均增长率（降低率）、面积问题、销售利润问题、数字问题。"],"formulas":["求根公式：x = [-b ± √(b²-4ac)] / (2a)（Δ≥0）","Δ = b² - 4ac","x₁ + x₂ = -b/a，x₁·x₂ = c/a","平均增长率：a(1+x)ⁿ = b"],"example":{"src":"原创模拟题（对标东莞中考题型）","prob":"某工厂 2024 年产值为 200 万元，经过连续两年增长，2026 年产值达到 288 万元。求该工厂年产值的年平均增长率。","sol":"设年平均增长率为 x。\n200(1+x)² = 288，(1+x)² = 1.44，1+x = ±1.2，\nx₁ = 0.2 = 20%，x₂ = -2.2（不合题意，舍去）。\n答：年平均增长率为 20%。\n关键点：增长率模型 a(1+x)ⁿ = b；负根要对照实际意义舍去。"},"pitfalls":["使用韦达定理求参数后忘记验证 Δ ≥ 0，导致取到使方程无实根的值。","直接开平方漏掉负根：(x-1)² = 9 得 x-1 = ±3，两个解。","增长率问题把“连续两年”理解错：基数 × (1+x)²，不是 ×(1+2x)。"],"tech":["选解法：能因式分解先分解；一次项系数为偶数配方法顺手；一般情况公式法保底。","含参问题先由 Δ 定范围，再用韦达定理列式，最后回代 Δ 检验。","应用题验根双标准：数学上满足方程，实际上满足意义（增长率、边长为正等）。"],"kpIds":["K9-1-01","K9-1-02","K9-1-03","K9-1-04"]},{"id":"U9-2","name":"二次函数","sem":"九年级上册","semIdx":4,"grade":"九年级","yearTag":"初三综合","module":"代数","tags":["高频","重难点"],"freq":{"times":"约12~14题次","score":"约10~14分"},"defi":["二次函数 y = ax² + bx + c（a≠0），图象是抛物线。","三种形式：一般式、顶点式 y = a(x-h)² + k（顶点 (h,k)）、交点式 y = a(x-x₁)(x-x₂)。","性质：a>0 开口向上有最小值，a<0 开口向下有最大值；对称轴 x = -b/2a。","平移规律：左加右减（对 x），上加下减（对整体）。","与一元二次方程：y=0 的解 ⇔ 图象与 x 轴交点；与不等式：图象在 x 轴上（下）方的 x 范围。","实际应用：最大利润、最大面积、拱桥弹道；压轴常考二次函数与几何综合（面积、存在性）。"],"formulas":["对称轴 x = -b/(2a)；顶点 (-b/2a, (4ac-b²)/4a)","顶点式：y = a(x-h)² + k，顶点 (h, k)","与 x 轴交点 ⇔ ax²+bx+c=0 的根（Δ 定交点个数）","利润 = (售价-成本) × 销量"],"example":{"src":"原创模拟题（对标东莞中考题型）","prob":"已知抛物线经过点 (1, 0)、(3, 0)、(0, 3)。（1）求抛物线的解析式；（2）求顶点坐标，并说明函数的最值情况。","sol":"（1）由交点式设 y = a(x-1)(x-3)，代入 (0,3)：a×(-1)×(-3) = 3，得 a = 1。\n∴ y = (x-1)(x-3) = x² - 4x + 3。\n（2）配方：y = (x-2)² - 1，顶点 (2, -1)；∵ a = 1 > 0，开口向上，当 x = 2 时 y 有最小值 -1，无最大值。\n关键点：与 x 轴两交点已知时用交点式最快捷；顶点式直接读出最值。"},"pitfalls":["平移方向记反：y = (x-2)² 是 y = x² 向右平移 2 个单位（对 x 左加右减）。","求最值忽略自变量取值范围：区间内最值要对“顶点是否在区间内”分类讨论。","由图象判断 a、b、c 符号出错：开口定 a，对称轴与 a 联立定 b，y 轴交点定 c。"],"tech":["压轴破题三件套：先求解析式（待定系数），再设动点坐标（用参数 t），最后把几何量（线段、面积）表示成 t 的函数。","面积问题“铅垂高 × 水平宽 ÷ 2”：斜放三角形沿坐标轴方向切割。","存在性问题（等腰、直角、平行四边形）：分类讨论 + 两圆一线（等腰）等几何法先定位再计算。","利润问题先写函数关系式，再配方求最值，注意 x 的实际范围。"],"kpIds":["K9-2-01","K9-2-02","K9-2-03","K9-2-04","K9-2-05"]},{"id":"U9-3","name":"旋转","sem":"九年级上册","semIdx":4,"grade":"九年级","yearTag":"初三综合","module":"几何","tags":[],"freq":{"times":"约5~7题次","score":"约3~6分"},"defi":["旋转三要素：旋转中心、旋转方向、旋转角。","旋转性质：对应点到旋转中心距离相等；对应点与中心连线所成角都等于旋转角；旋转前后图形全等。","中心对称：旋转 180° 后的重合关系；中心对称图形绕中心转 180° 与自身重合。","关于原点对称的点：P(x, y) → P'(-x, -y)。","常见中心对称图形：平行四边形、线段、圆；常见轴对称而非中心对称：等腰三角形、角。"],"formulas":["P(x, y) 关于原点对称：(-x, -y)","点 (x, y) 绕原点逆时针旋转 90°：(-y, x)；旋转 180°：(-x, -y)","旋转 ⇒ 对应线段相等、对应角相等（全等）"],"example":{"src":"原创模拟题（对标东莞中考题型）","prob":"将点 A(2, 3) 绕原点 O 逆时针旋转 90° 得到点 A′。（1）写出 A′ 的坐标；（2）若点 B(4, 0)，求旋转后对应点 B′ 的坐标，并判断 △AOB 与 △A′OB′ 的关系。","sol":"（1）绕原点逆时针 90°：(x, y) → (-y, x)，∴ A′(-3, 2)。\n（2）B′(0, 4)。\n由旋转性质，△AOB ≌ △A′OB′（旋转前后图形全等），且 OA = OA′，OB = OB′，∠AOA′ = ∠BOB′ = 90°。\n关键点：旋转必出等腰三角形（OA = OA′ 且夹角为旋转角），这是构造全等的常用入口。"},"pitfalls":["旋转方向与角度漏看：顺时针、逆时针 90° 结果完全不同。","中心对称图形与轴对称图形判断混淆：正五边形轴对称但不是中心对称。","坐标旋转公式用错：绕原点逆 90° 是 (-y, x)，顺 90° 是 (y, -x)。"],"tech":["见旋转想全等：对应边等、对应角等，常与等边、等腰直角三角形综合。","手拉手模型：共顶点的两个等边（或等腰直角）三角形，必有一对全等三角形。","半角模型：正方形中 45° 角问题，用旋转把分散线段拼到一起。"],"kpIds":["K9-3-01","K9-3-02","K9-3-03"]},{"id":"U9-4","name":"圆","sem":"九年级上册","semIdx":4,"grade":"九年级","yearTag":"初三综合","module":"几何","tags":["高频","重难点"],"freq":{"times":"约11~13题次","score":"约8~12分"},"defi":["圆的有关概念：弦、直径、弧（优弧、劣弧、半圆）、圆心角、圆周角。","垂径定理：垂直于弦的直径平分这条弦，并且平分弦所对的两条弧。","弧、弦、圆心角：在同圆或等圆中，相等的圆心角所对的弧相等、弦相等（可互推）。","圆周角定理：同弧所对的圆周角等于圆心角的一半；推论：半圆（直径）所对的圆周角是直角，90° 圆周角所对的弦是直径；同弧所对圆周角相等。","直线与圆的位置关系：相交（d<r）、相切（d=r）、相离（d>r）。","切线判定：经过半径外端并且垂直于这条半径的直线是切线；切线性质：切线垂直于过切点的半径。","切线长定理：圆外一点引圆的两条切线，切线长相等，该点与圆心连线平分夹角。","三角形的外接圆（外心：三边垂直平分线交点）与内切圆（内心：三条角平分线交点）。","弧长 l = nπr/180；扇形面积 S = nπr²/360 = ½lr；圆锥侧面积 = πrl（l 为母线）。"],"formulas":["圆周角 = ½ 圆心角（同弧）","d 与 r：d<r 相交，d=r 相切，d>r 相离","弧长 l = nπr/180；S扇形 = nπr²/360 = ½lr","S圆锥侧 = πrl；内切圆半径 r = 2S/C（C 为周长）"],"example":{"src":"原创模拟题（对标东莞中考题型）","prob":"⊙O 的半径为 5，弦 AB = 8。（1）求圆心 O 到弦 AB 的距离；（2）直径 CD ⊥ AB 于点 E（D 在劣弧 AB 上），求 DE 的长。","sol":"（1）作 OE ⊥ AB 于 E，由垂径定理 AE = ½AB = 4。\n在 Rt△OEA 中，OE = √(OA² - AE²) = √(25 - 16) = 3。\n（2）D 在圆上且在劣弧侧，OD = 5，DE = OD - OE = 5 - 3 = 2。\n关键点：见弦作弦心距，构造“半径、半弦、弦心距”直角三角形，是圆中计算第一模型。"},"pitfalls":["垂径定理条件记不全：必须“过圆心且垂直于弦”，仅垂直弦的线段不一定平分。","一条弦对应两条弧：同弦所对的圆周角相等或互补（分在两侧时互补），漏解常见。","切线证明思路不清：有交点则“连半径、证垂直”；无交点则“作垂直、证半径”。"],"tech":["见直径想直角：直径所对圆周角 90°，构造直角三角形。","见切线连半径：切线 ⊥ 过切点半径，瞬间出直角。","弦长问题三板斧：作弦心距 → 半弦 → 勾股定理。","阴影面积用割补：规则图形面积相加减，弓形 = 扇形 - 三角形。"],"kpIds":["K9-4-01","K9-4-02","K9-4-03","K9-4-04","K9-4-05","K9-4-06"]},{"id":"U9-5","name":"概率初步","sem":"九年级上册","semIdx":4,"grade":"九年级","yearTag":"初三综合","module":"统计概率","tags":["高频"],"freq":{"times":"约5~6题次","score":"约4~6分"},"defi":["事件分类：必然事件（P=1）、不可能事件（P=0）、随机事件（0<P<1）。","概率：刻画随机事件发生可能性大小的数值，P(A) = 有利结果数 / 等可能结果总数。","列举法：直接枚举；两步及以上试验用列表法或树状图法。","用频率估计概率：大量重复试验中，频率稳定在概率附近。","几何概型：概率转化为长度、面积之比。"],"formulas":["P(A) = m/n（等可能情形下，m 为 A 包含的结果数）","两步试验：列表 n² 格；不放回则对角线（重复）去掉","几何概型：P = 有利区域面积 / 总面积"],"example":{"src":"原创模拟题（对标东莞中考题型）","prob":"一个不透明袋子中装有 2 个红球和 1 个白球（除颜色外完全相同）。从中不放回地摸出 2 个球，求两次都摸到红球的概率。","sol":"记红球为 红1、红2，白球为 白。列表（不放回，无对角线）：\n第一次有 3 种，第二次有 2 种，共 6 种等可能结果。\n两次都是红球的结果：(红1,红2)、(红2,红1)，共 2 种。\n∴ P(两次都红) = 2/6 = 1/3。\n关键点：不放回时总数是 3×2 = 6 而不是 3×3 = 9；若改为放回，则答案为 4/9，一字之差答案不同。"},"pitfalls":["放回与不放回不分：放回总数 n²，不放回 n(n-1)，审题圈关键词。","误把不等可能结果当等可能：如“掷两枚骰子点数之和”，和为 2 与和为 7 可能性不同。","列表、画树状图时漏结果，导致分母算错。"],"tech":["两步试验固定用列表或树状图，先定总数再找有利数。","“至少有一个”用对立事件：P(至少) = 1 - P(一个都没有)。","几何概型把概率翻译成面积比，常与一次函数、圆等结合出小题。"],"kpIds":["K9-5-01","K9-5-02","K9-5-03"]},{"id":"U9-6","name":"反比例函数","sem":"九年级下册","semIdx":5,"grade":"九年级","yearTag":"初三综合","module":"代数","tags":["高频"],"freq":{"times":"约8~10题次","score":"约6~10分"},"defi":["反比例函数 y = k/x（k≠0），图象是双曲线。","k > 0：图象在第一、三象限，在每个象限内 y 随 x 增大而减小；k < 0：第二、四象限，每支上 y 随 x 增大而增大。","k 的几何意义：图象上一点向两坐标轴作垂线，围成矩形面积 = |k|；围成三角形面积 = |k|/2。","与一次函数综合：交点 ⇔ 联立方程的解；比较大小以交点与 y 轴为界分段。","实际应用：路程一定时速度与时间、压力一定时压强与面积等反比关系。"],"formulas":["y = k/x ⇔ xy = k（k≠0）","S矩形 = |k|；S三角形 = |k|/2","增减性必须限定“在每一个象限内”"],"example":{"src":"原创模拟题（对标东莞中考题型）","prob":"如图，点 A 在第一象限，且在反比例函数 y = k/x 的图象上，AB ⊥ x 轴于点 B。若 △AOB 的面积为 3，求 k 的值。","sol":"设 A(a, k/a)（a>0）。S△AOB = ½ × OB × AB = ½ × a × k/a = k/2。\n由 k/2 = 3，得 k = 6。\n关键点：|k| = 2S△ = S矩形；由图象所在象限定 k 的符号，本题在第一象限取正。"},"pitfalls":["增减性表述丢“在每个象限内”：跨象限比较 y₁ 与 y₂ 直接用增减性必错。","k 的符号与象限对应记反：k<0 在二、四象限。","求 k 忘加绝对值讨论：面积给出的是 |k|，符号由象限决定。"],"tech":["面积模型：见“反比例 + 三角形/矩形面积”直接 |k| = 2S 或 S，秒出 k。","与一次函数综合：先联立求交点，再画草图用“竖线切割法”分段比较大小。","交点关于原点对称：y = k/x 与过原点直线的两交点必关于原点对称，可简化计算。"],"kpIds":["K9-6-01","K9-6-02","K9-6-03"]},{"id":"U9-7","name":"相似","sem":"九年级下册","semIdx":5,"grade":"九年级","yearTag":"初三综合","module":"几何","tags":["高频","重难点"],"freq":{"times":"约10~12题次","score":"约6~10分"},"defi":["比例线段：四条线段 a、b、c、d 中 a/b = c/d，则成比例；比例中项 b² = ac。","平行线分线段成比例：两条直线被一组平行线所截，对应线段成比例。","相似三角形判定：两角对应相等（AA）；两边对应成比例且夹角相等（SAS）；三边对应成比例（SSS）；平行于一边的直线截得三角形与原三角形相似。","相似三角形性质：对应角相等、对应边成比例；周长比 = 相似比；面积比 = 相似比的平方。","位似：特殊的相似，对应点连线交于位似中心；以原点为位似中心时，坐标变为 (kx, ky) 或 (-kx, -ky)。","应用：测高（影子、镜面）、测距，常与解直角三角形综合。"],"formulas":["相似比 k：对应边之比；周长比 = k；面积比 = k²","平行线分线段成比例：上/下 = 上/下","位似（原点为中心）：P(x,y) → (kx, ky) 或 (-kx, -ky)"],"example":{"src":"原创模拟题（对标东莞中考题型）","prob":"在 △ABC 中，DE∥BC，分别交 AB、AC 于点 D、E。若 AD = 2，DB = 4，DE = 3。（1）求 BC 的长；（2）求 S△ADE : S△ABC。","sol":"（1）∵ DE∥BC，∴ △ADE ∽ △ABC，相似比 = AD/AB = 2/(2+4) = 1/3。\n∴ BC = 3 × DE = 9。\n（2）面积比 = 相似比² = (1/3)² = 1/9，即 S△ADE : S△ABC = 1 : 9。\n关键点：相似比分母是 AB 而不是 DB，这是最高频错误点；面积比记得平方。"},"pitfalls":["相似比用错线段：AD/AB 才是相似比，AD/DB 不是。","面积比忘记平方：周长比 = k，面积比 = k²，体（面）积问题最易混。","位似坐标漏掉异侧情形：在原点两侧时坐标为 (-kx, -ky)，常有两解。"],"tech":["A 字型、X 字型：平行出相似，先写对应顶点再列比例式。","一线三等角：共线三等角（如直角）必出相似，求线段利器。","射影定理：直角三角形斜边上的高把原三角形分成两个相似三角形，ab = ch、a² = 斜边×射影等结论直接用。","相似与函数综合：动点问题中用相似把几何线段比转化为坐标关系。"],"kpIds":["K9-7-01","K9-7-02","K9-7-03","K9-7-04","K9-7-05"]},{"id":"U9-8","name":"锐角三角函数","sem":"九年级下册","semIdx":5,"grade":"九年级","yearTag":"初三综合","module":"几何","tags":["高频"],"freq":{"times":"约8~10题次","score":"约6~8分"},"defi":["定义：在 Rt△ABC（∠C=90°）中，sinA = 对边/斜边 = a/c，cosA = 邻边/斜边 = b/c，tanA = 对边/邻边 = a/b。","特殊角三角函数值：30°、45°、60° 的 sin、cos、tan 必须熟记。","同角关系：sin²A + cos²A = 1，tanA = sinA/cosA。","解直角三角形：已知两边或一边一锐角，求其余边和角。","应用：仰角、俯角（视线与水平线夹角）；方位角；坡度 i = 铅直高度/水平宽度 = tanα。"],"formulas":["sinA = a/c，cosA = b/c，tanA = a/b","sin30°=1/2，cos30°=√3/2，tan30°=√3/3；sin45°=cos45°=√2/2，tan45°=1；sin60°=√3/2，cos60°=1/2，tan60°=√3","sin²A + cos²A = 1","坡度 i = h/l = tanα"],"example":{"src":"原创模拟题（对标东莞中考题型）","prob":"为测量某楼高度，在 A 处测得楼顶的仰角为 30°，向楼的方向前进 20 m 到达 B 处，测得楼顶的仰角为 45°。已知测量仪器高忽略不计，求楼高（结果保留根号）。","sol":"设楼高 CD = h m，D 为楼底，则 BD = h/tan45° = h，AD = h/tan30° = √3 h。\nAD - BD = AB = 20，即 √3 h - h = 20，h = 20/(√3 - 1) = 10(√3 + 1) m。\n答：楼高为 10(√3+1) m（约 27.3 m）。\n关键点：“背靠背”双仰角模型，公共边 h 架桥，两个直角三角形分别表示水平距离再作差。"},"pitfalls":["特殊角函数值记混：sin 随角度增大而增大，cos 相反，可用单调性自检。","坡度理解错：i = 铅直/水平 = tanα，不是铅直/斜坡长。","仰角俯角找错位置：都是视线与水平线的夹角，不是与竖直线的夹角。"],"tech":["无直角就造直角：作高分割图形，把斜三角形转化为两个直角三角形。","母抱子、背靠背两大模型：共边设 h（或 x），两边分别表示再和差。","结果处理：题目要求精确值保留根号；要求近似值时 √2≈1.414、√3≈1.732。"],"kpIds":["K9-8-01","K9-8-02","K9-8-03","K9-8-04"]},{"id":"U9-9","name":"投影与视图","sem":"九年级下册","semIdx":5,"grade":"九年级","yearTag":"初三综合","module":"几何","tags":[],"freq":{"times":"约3~5题次","score":"约2~3分"},"defi":["投影：平行投影（太阳光）与中心投影（点光源，如灯光）。","三视图：主视图（从前看）、左视图（从左看）、俯视图（从上看）。","画法规矩：长对正、高平齐、宽相等；看得见的轮廓画实线，看不见的画虚线。","由三视图还原几何体：先定基本体（柱、锥、球），再核对细节。","小正方体组合：由俯视图定底层分布，由主、左视图定各位置高度。"],"formulas":["主俯长对正，主左高平齐，俯左宽相等","圆锥：主、左视图为等腰三角形，俯视图带圆心","圆锥侧面积 S = πrl（l 母线）"],"example":{"src":"原创模拟题（对标东莞中考题型）","prob":"一个几何体的主视图和左视图都是底为 4、高为 3 的等腰三角形，俯视图是带圆心的圆。（1）判断该几何体的形状；（2）求它的侧面积。","sol":"（1）俯视图为圆且带圆心，主、左视图为等腰三角形，所以该几何体是圆锥。\n（2）底面直径 4 ⇒ r = 2；圆锥高 h = 3，母线 l = √(r² + h²) = √(4+9) = √13。\n侧面积 S = πrl = π × 2 × √13 = 2√13π。\n关键点：俯视图圆心是锥顶投影；母线 ≠ 高，必须用勾股定理求。"},"pitfalls":["左视图与右视图不分：中考考左视图，从物体左侧向右看。","看不见的轮廓线漏画虚线，直接扣步骤分。","数小正方体时忘分类“最多、最少”：只给两视图时答案往往不唯一。"],"tech":["俯视图标数法：在俯视图每个格子标注该位置小正方体的个数，主左视图分别给出每列、每行的最大值。","还原几何体先抓俯视图定“底”，再用主左视图拔“高”。","口诀“长对正、高平齐、宽相等”检验视图是否画对。"],"kpIds":["K9-9-01","K9-9-02","K9-9-03"]}],"kps":[{"id":"K7-1-01","unit":"U7-1","name":"有理数的概念与分类","stars":3,"tags":[],"f":"整数和分数统称有理数","module":"代数","grade":"七年级","semIdx":0},{"id":"K7-1-02","unit":"U7-1","name":"数轴、相反数与绝对值","stars":4,"tags":["易错"],"f":"|a|≥0；a与-a互为相反数","module":"代数","grade":"七年级","semIdx":0},{"id":"K7-1-03","unit":"U7-1","name":"有理数的混合运算","stars":4,"tags":[],"f":"先乘方后乘除再加减","module":"代数","grade":"七年级","semIdx":0},{"id":"K7-1-04","unit":"U7-1","name":"科学记数法与近似数","stars":3,"tags":[],"f":"N=a×10ⁿ（1≤a<10）","module":"代数","grade":"七年级","semIdx":0},{"id":"K7-2-01","unit":"U7-2","name":"单项式与多项式","stars":3,"tags":[],"f":"系数、次数的判定","module":"代数","grade":"七年级","semIdx":0},{"id":"K7-2-02","unit":"U7-2","name":"同类项与合并同类项","stars":4,"tags":[],"f":"字母同、指数同","module":"代数","grade":"七年级","semIdx":0},{"id":"K7-2-03","unit":"U7-2","name":"去括号与化简求值","stars":4,"tags":["易错"],"f":"先化简再代入","module":"代数","grade":"七年级","semIdx":0},{"id":"K7-2-04","unit":"U7-2","name":"整体代入求值","stars":3,"tags":[],"f":"整体思想","module":"代数","grade":"七年级","semIdx":0},{"id":"K7-3-01","unit":"U7-3","name":"等式的性质与方程的解","stars":3,"tags":[],"f":"等式性质1、2","module":"代数","grade":"七年级","semIdx":0},{"id":"K7-3-02","unit":"U7-3","name":"解一元一次方程","stars":4,"tags":["易错"],"f":"去分母→去括号→移项→合并→系数化1","module":"代数","grade":"七年级","semIdx":0},{"id":"K7-3-03","unit":"U7-3","name":"一元一次方程应用题","stars":5,"tags":["高频"],"f":"审设列解验答","module":"代数","grade":"七年级","semIdx":0},{"id":"K7-4-01","unit":"U7-4","name":"直线、射线、线段","stars":3,"tags":[],"f":"两点确定一条直线；两点之间线段最短","module":"几何","grade":"七年级","semIdx":0},{"id":"K7-4-02","unit":"U7-4","name":"线段中点与线段计算","stars":3,"tags":[],"f":"AM=MB=½AB","module":"几何","grade":"七年级","semIdx":0},{"id":"K7-4-03","unit":"U7-4","name":"角的度量与角度计算","stars":4,"tags":[],"f":"1°=60′","module":"几何","grade":"七年级","semIdx":0},{"id":"K7-4-04","unit":"U7-4","name":"余角与补角","stars":4,"tags":["易错"],"f":"互余和90°，互补和180°","module":"几何","grade":"七年级","semIdx":0},{"id":"K7-5-01","unit":"U7-5","name":"对顶角、邻补角与垂线","stars":3,"tags":[],"f":"对顶角相等；垂线段最短","module":"几何","grade":"七年级","semIdx":1},{"id":"K7-5-02","unit":"U7-5","name":"三线八角的识别","stars":4,"tags":["易错"],"f":"同位角F形、内错角Z形、同旁内角U形","module":"几何","grade":"七年级","semIdx":1},{"id":"K7-5-03","unit":"U7-5","name":"平行线的判定","stars":4,"tags":[],"f":"角关系⇒平行","module":"几何","grade":"七年级","semIdx":1},{"id":"K7-5-04","unit":"U7-5","name":"平行线的性质","stars":5,"tags":["高频"],"f":"平行⇒角关系","module":"几何","grade":"七年级","semIdx":1},{"id":"K7-5-05","unit":"U7-5","name":"平移的性质","stars":2,"tags":[],"f":"对应线段平行且相等","module":"几何","grade":"七年级","semIdx":1},{"id":"K7-6-01","unit":"U7-6","name":"平方根与算术平方根","stars":4,"tags":["易错"],"f":"x²=a⇒x=±√a","module":"代数","grade":"七年级","semIdx":1},{"id":"K7-6-02","unit":"U7-6","name":"立方根","stars":2,"tags":[],"f":"³√a³=a","module":"代数","grade":"七年级","semIdx":1},{"id":"K7-6-03","unit":"U7-6","name":"无理数与实数概念","stars":3,"tags":[],"f":"实数与数轴一一对应","module":"代数","grade":"七年级","semIdx":1},{"id":"K7-6-04","unit":"U7-6","name":"实数的运算与估算","stars":4,"tags":[],"f":"√a²=|a|","module":"代数","grade":"七年级","semIdx":1},{"id":"K7-7-01","unit":"U7-7","name":"象限与坐标特征","stars":4,"tags":[],"f":"四象限符号与坐标轴特征","module":"代数","grade":"七年级","semIdx":1},{"id":"K7-7-02","unit":"U7-7","name":"坐标与距离","stars":3,"tags":["易错"],"f":"到x轴|y|，到y轴|x|","module":"代数","grade":"七年级","semIdx":1},{"id":"K7-7-03","unit":"U7-7","name":"平移与对称的坐标变化","stars":3,"tags":[],"f":"右加左减，上加下减","module":"代数","grade":"七年级","semIdx":1},{"id":"K7-8-01","unit":"U7-8","name":"二元一次方程（组）的解","stars":3,"tags":[],"f":"代入验证两组值","module":"代数","grade":"七年级","semIdx":1},{"id":"K7-8-02","unit":"U7-8","name":"代入消元与加减消元","stars":4,"tags":[],"f":"二元化一元","module":"代数","grade":"七年级","semIdx":1},{"id":"K7-8-03","unit":"U7-8","name":"二元一次方程组应用题","stars":5,"tags":["高频"],"f":"两个未知数两个等量关系","module":"代数","grade":"七年级","semIdx":1},{"id":"K7-9-01","unit":"U7-9","name":"不等式的性质","stars":4,"tags":["易错"],"f":"乘除负数要变号","module":"代数","grade":"七年级","semIdx":1},{"id":"K7-9-02","unit":"U7-9","name":"解一元一次不等式","stars":4,"tags":[],"f":"解法同方程，注意变号","module":"代数","grade":"七年级","semIdx":1},{"id":"K7-9-03","unit":"U7-9","name":"不等式组与整数解","stars":4,"tags":[],"f":"同大取大等口诀","module":"代数","grade":"七年级","semIdx":1},{"id":"K7-9-04","unit":"U7-9","name":"不等式（组）的实际应用","stars":3,"tags":[],"f":"关键词列不等式","module":"代数","grade":"七年级","semIdx":1},{"id":"K7-10-01","unit":"U7-10","name":"调查方式与抽样概念","stars":3,"tags":[],"f":"总体、个体、样本、容量","module":"统计概率","grade":"七年级","semIdx":1},{"id":"K7-10-02","unit":"U7-10","name":"频数与频率","stars":4,"tags":[],"f":"频率=频数÷总数","module":"统计概率","grade":"七年级","semIdx":1},{"id":"K7-10-03","unit":"U7-10","name":"统计图的选择与计算","stars":5,"tags":["高频"],"f":"圆心角=360°×比例","module":"统计概率","grade":"七年级","semIdx":1},{"id":"K8-1-01","unit":"U8-1","name":"三角形的三边关系","stars":4,"tags":[],"f":"|a-b|<c<a+b","module":"几何","grade":"八年级","semIdx":2},{"id":"K8-1-02","unit":"U8-1","name":"三角形的内角和与外角","stars":4,"tags":[],"f":"内角和180°","module":"几何","grade":"八年级","semIdx":2},{"id":"K8-1-03","unit":"U8-1","name":"多边形及其内角和","stars":4,"tags":[],"f":"(n-2)×180°","module":"几何","grade":"八年级","semIdx":2},{"id":"K8-1-04","unit":"U8-1","name":"三角形的高、中线与角平分线","stars":3,"tags":[],"f":"三线概念与画法","module":"几何","grade":"八年级","semIdx":2},{"id":"K8-2-01","unit":"U8-2","name":"全等三角形的性质","stars":4,"tags":[],"f":"对应边等、对应角等","module":"几何","grade":"八年级","semIdx":2},{"id":"K8-2-02","unit":"U8-2","name":"全等三角形的判定","stars":5,"tags":["高频","重难点"],"f":"SSS/SAS/ASA/AAS/HL","module":"几何","grade":"八年级","semIdx":2},{"id":"K8-2-03","unit":"U8-2","name":"角平分线的性质与判定","stars":4,"tags":[],"f":"线上点到两边距离相等","module":"几何","grade":"八年级","semIdx":2},{"id":"K8-2-04","unit":"U8-2","name":"全等辅助线模型","stars":4,"tags":["重难点"],"f":"截长补短、倍长中线","module":"几何","grade":"八年级","semIdx":2},{"id":"K8-3-01","unit":"U8-3","name":"轴对称与线段的垂直平分线","stars":4,"tags":[],"f":"线上点到两端距离相等","module":"几何","grade":"八年级","semIdx":2},{"id":"K8-3-02","unit":"U8-3","name":"等腰三角形的性质与判定","stars":5,"tags":["高频","易错"],"f":"等边对等角；三线合一","module":"几何","grade":"八年级","semIdx":2},{"id":"K8-3-03","unit":"U8-3","name":"等边三角形与含30°直角三角形","stars":3,"tags":[],"f":"30°对边=½斜边","module":"几何","grade":"八年级","semIdx":2},{"id":"K8-3-04","unit":"U8-3","name":"最短路径问题（将军饮马）","stars":4,"tags":["重难点"],"f":"作对称点化折为直","module":"几何","grade":"八年级","semIdx":2},{"id":"K8-4-01","unit":"U8-4","name":"幂的运算法则","stars":4,"tags":["易错"],"f":"aᵐ·aⁿ=aᵐ⁺ⁿ","module":"代数","grade":"八年级","semIdx":2},{"id":"K8-4-02","unit":"U8-4","name":"乘法公式","stars":5,"tags":["高频"],"f":"平方差与完全平方","module":"代数","grade":"八年级","semIdx":2},{"id":"K8-4-03","unit":"U8-4","name":"整式的乘除运算","stars":3,"tags":[],"f":"单项式×多项式法则","module":"代数","grade":"八年级","semIdx":2},{"id":"K8-4-04","unit":"U8-4","name":"因式分解","stars":5,"tags":["高频","易错"],"f":"一提二套三查","module":"代数","grade":"八年级","semIdx":2},{"id":"K8-5-01","unit":"U8-5","name":"分式的概念与有意义条件","stars":4,"tags":["易错"],"f":"B≠0；值为0需A=0且B≠0","module":"代数","grade":"八年级","semIdx":2},{"id":"K8-5-02","unit":"U8-5","name":"分式的运算","stars":4,"tags":[],"f":"先约分后乘除，先通分后加减","module":"代数","grade":"八年级","semIdx":2},{"id":"K8-5-03","unit":"U8-5","name":"分式的化简求值","stars":4,"tags":[],"f":"先分解再约分","module":"代数","grade":"八年级","semIdx":2},{"id":"K8-5-04","unit":"U8-5","name":"分式方程及其应用","stars":5,"tags":["高频","易错"],"f":"去分母+验根","module":"代数","grade":"八年级","semIdx":2},{"id":"K8-6-01","unit":"U8-6","name":"二次根式的概念与有意义条件","stars":4,"tags":["易错"],"f":"被开方数≥0","module":"代数","grade":"八年级","semIdx":3},{"id":"K8-6-02","unit":"U8-6","name":"二次根式的性质","stars":4,"tags":[],"f":"(√a)²=a；√a²=|a|","module":"代数","grade":"八年级","semIdx":3},{"id":"K8-6-03","unit":"U8-6","name":"二次根式的运算","stars":4,"tags":[],"f":"先化简再合并","module":"代数","grade":"八年级","semIdx":3},{"id":"K8-7-01","unit":"U8-7","name":"勾股定理","stars":5,"tags":["高频"],"f":"a²+b²=c²","module":"几何","grade":"八年级","semIdx":3},{"id":"K8-7-02","unit":"U8-7","name":"勾股定理的逆定理","stars":3,"tags":[],"f":"a²+b²=c²⇒直角三角形","module":"几何","grade":"八年级","semIdx":3},{"id":"K8-7-03","unit":"U8-7","name":"勾股定理的应用（折叠、最短路径）","stars":4,"tags":["重难点"],"f":"设x列方程","module":"几何","grade":"八年级","semIdx":3},{"id":"K8-8-01","unit":"U8-8","name":"平行四边形的性质与判定","stars":4,"tags":[],"f":"对边等、对角等、对角线互平","module":"几何","grade":"八年级","semIdx":3},{"id":"K8-8-02","unit":"U8-8","name":"三角形的中位线","stars":4,"tags":[],"f":"平行第三边且为其一半","module":"几何","grade":"八年级","semIdx":3},{"id":"K8-8-03","unit":"U8-8","name":"矩形与菱形","stars":5,"tags":["高频"],"f":"矩形对角线相等；菱形对角线垂直","module":"几何","grade":"八年级","semIdx":3},{"id":"K8-8-04","unit":"U8-8","name":"正方形与中点四边形","stars":4,"tags":["重难点"],"f":"对角线链条判定","module":"几何","grade":"八年级","semIdx":3},{"id":"K8-9-01","unit":"U8-9","name":"函数的概念与图象","stars":4,"tags":[],"f":"唯一对应；看图读信息","module":"代数","grade":"八年级","semIdx":3},{"id":"K8-9-02","unit":"U8-9","name":"一次函数的图象与性质","stars":5,"tags":["高频"],"f":"k定增减，b定截距","module":"代数","grade":"八年级","semIdx":3},{"id":"K8-9-03","unit":"U8-9","name":"待定系数法求解析式","stars":5,"tags":["高频"],"f":"两点代入解k、b","module":"代数","grade":"八年级","semIdx":3},{"id":"K8-9-04","unit":"U8-9","name":"一次函数与方程、不等式","stars":4,"tags":["重难点"],"f":"交点=方程组的解","module":"代数","grade":"八年级","semIdx":3},{"id":"K8-9-05","unit":"U8-9","name":"一次函数的实际应用","stars":5,"tags":["高频","易错"],"f":"分段讨论，节点归属","module":"代数","grade":"八年级","semIdx":3},{"id":"K8-10-01","unit":"U8-10","name":"平均数与加权平均数","stars":4,"tags":[],"f":"x̄=Σxw/Σw","module":"统计概率","grade":"八年级","semIdx":3},{"id":"K8-10-02","unit":"U8-10","name":"中位数与众数","stars":4,"tags":["易错"],"f":"先排序再取中","module":"统计概率","grade":"八年级","semIdx":3},{"id":"K8-10-03","unit":"U8-10","name":"方差与数据波动","stars":4,"tags":[],"f":"s²小则稳定","module":"统计概率","grade":"八年级","semIdx":3},{"id":"K9-1-01","unit":"U9-1","name":"一元二次方程的解法","stars":5,"tags":["高频"],"f":"四种解法，分解优先","module":"代数","grade":"九年级","semIdx":4},{"id":"K9-1-02","unit":"U9-1","name":"根的判别式","stars":5,"tags":["高频","易错"],"f":"Δ=b²-4ac","module":"代数","grade":"九年级","semIdx":4},{"id":"K9-1-03","unit":"U9-1","name":"根与系数的关系","stars":4,"tags":["重难点"],"f":"x₁+x₂=-b/a，x₁x₂=c/a","module":"代数","grade":"九年级","semIdx":4},{"id":"K9-1-04","unit":"U9-1","name":"一元二次方程的应用","stars":4,"tags":["高频"],"f":"a(1±x)ⁿ=b","module":"代数","grade":"九年级","semIdx":4},{"id":"K9-2-01","unit":"U9-2","name":"二次函数的图象与性质","stars":5,"tags":["高频","重难点"],"f":"开口、对称轴、顶点、增减性","module":"代数","grade":"九年级","semIdx":4},{"id":"K9-2-02","unit":"U9-2","name":"二次函数解析式的确定","stars":5,"tags":["高频"],"f":"一般式/顶点式/交点式","module":"代数","grade":"九年级","semIdx":4},{"id":"K9-2-03","unit":"U9-2","name":"二次函数与方程、不等式","stars":4,"tags":["重难点"],"f":"y=0⇔交点；图象上下⇔不等式","module":"代数","grade":"九年级","semIdx":4},{"id":"K9-2-04","unit":"U9-2","name":"二次函数的实际应用","stars":4,"tags":["高频"],"f":"配方求最值，注意定义域","module":"代数","grade":"九年级","semIdx":4},{"id":"K9-2-05","unit":"U9-2","name":"二次函数与几何综合（压轴）","stars":5,"tags":["重难点"],"f":"设动点t，几何量函数化","module":"代数","grade":"九年级","semIdx":4},{"id":"K9-3-01","unit":"U9-3","name":"旋转的性质","stars":4,"tags":[],"f":"对应点距中心等，夹角=旋转角","module":"几何","grade":"九年级","semIdx":4},{"id":"K9-3-02","unit":"U9-3","name":"中心对称与坐标变化","stars":3,"tags":[],"f":"关于原点：(-x,-y)","module":"几何","grade":"九年级","semIdx":4},{"id":"K9-3-03","unit":"U9-3","name":"旋转构造与经典模型","stars":4,"tags":["重难点"],"f":"手拉手、半角模型","module":"几何","grade":"九年级","semIdx":4},{"id":"K9-4-01","unit":"U9-4","name":"垂径定理","stars":5,"tags":["高频"],"f":"垂直弦的直径平分弦与弧","module":"几何","grade":"九年级","semIdx":4},{"id":"K9-4-02","unit":"U9-4","name":"圆周角定理及推论","stars":5,"tags":["高频","易错"],"f":"圆周角=½圆心角；直径对直角","module":"几何","grade":"九年级","semIdx":4},{"id":"K9-4-03","unit":"U9-4","name":"切线的判定与性质","stars":5,"tags":["高频","重难点"],"f":"连半径证垂直","module":"几何","grade":"九年级","semIdx":4},{"id":"K9-4-04","unit":"U9-4","name":"点、直线与圆的位置关系","stars":4,"tags":[],"f":"d与r比较","module":"几何","grade":"九年级","semIdx":4},{"id":"K9-4-05","unit":"U9-4","name":"弧长与扇形面积","stars":4,"tags":[],"f":"l=nπr/180；S=½lr","module":"几何","grade":"九年级","semIdx":4},{"id":"K9-4-06","unit":"U9-4","name":"正多边形与圆","stars":2,"tags":[],"f":"中心角=360°/n","module":"几何","grade":"九年级","semIdx":4},{"id":"K9-5-01","unit":"U9-5","name":"随机事件与概率的意义","stars":3,"tags":[],"f":"0≤P≤1","module":"统计概率","grade":"九年级","semIdx":4},{"id":"K9-5-02","unit":"U9-5","name":"用列举法（列表、树状图）求概率","stars":5,"tags":["高频","易错"],"f":"P=m/n","module":"统计概率","grade":"九年级","semIdx":4},{"id":"K9-5-03","unit":"U9-5","name":"用频率估计概率","stars":2,"tags":[],"f":"频率稳定于概率","module":"统计概率","grade":"九年级","semIdx":4},{"id":"K9-6-01","unit":"U9-6","name":"反比例函数的图象与性质","stars":5,"tags":["高频","易错"],"f":"k定象限，每支内单调","module":"代数","grade":"九年级","semIdx":5},{"id":"K9-6-02","unit":"U9-6","name":"k 的几何意义","stars":4,"tags":["重难点"],"f":"S矩形=|k|","module":"代数","grade":"九年级","semIdx":5},{"id":"K9-6-03","unit":"U9-6","name":"反比例函数与一次函数综合","stars":5,"tags":["高频"],"f":"联立求交点，分段比较","module":"代数","grade":"九年级","semIdx":5},{"id":"K9-7-01","unit":"U9-7","name":"相似三角形的判定","stars":5,"tags":["高频"],"f":"AA/SAS/SSS/平行","module":"几何","grade":"九年级","semIdx":5},{"id":"K9-7-02","unit":"U9-7","name":"相似三角形的性质","stars":4,"tags":[],"f":"周长比k，面积比k²","module":"几何","grade":"九年级","semIdx":5},{"id":"K9-7-03","unit":"U9-7","name":"相似基本模型（A字、X字、一线三等角）","stars":5,"tags":["重难点"],"f":"先定对应再列比","module":"几何","grade":"九年级","semIdx":5},{"id":"K9-7-04","unit":"U9-7","name":"位似","stars":3,"tags":["易错"],"f":"(kx,ky)或(-kx,-ky)","module":"几何","grade":"九年级","semIdx":5},{"id":"K9-7-05","unit":"U9-7","name":"相似的实际应用","stars":3,"tags":[],"f":"测高测距建模","module":"几何","grade":"九年级","semIdx":5},{"id":"K9-8-01","unit":"U9-8","name":"锐角三角函数的定义","stars":4,"tags":[],"f":"sin对/斜，cos邻/斜，tan对/邻","module":"几何","grade":"九年级","semIdx":5},{"id":"K9-8-02","unit":"U9-8","name":"特殊角的三角函数值","stars":4,"tags":["易错"],"f":"30°、45°、60°","module":"几何","grade":"九年级","semIdx":5},{"id":"K9-8-03","unit":"U9-8","name":"解直角三角形","stars":5,"tags":["高频"],"f":"知二求三","module":"几何","grade":"九年级","semIdx":5},{"id":"K9-8-04","unit":"U9-8","name":"解直角三角形的应用（仰角、坡度）","stars":5,"tags":["高频","重难点"],"f":"作高构造直角三角形","module":"几何","grade":"九年级","semIdx":5},{"id":"K9-9-01","unit":"U9-9","name":"投影（平行投影与中心投影）","stars":2,"tags":[],"f":"太阳光平行，灯光中心","module":"几何","grade":"九年级","semIdx":5},{"id":"K9-9-02","unit":"U9-9","name":"三视图的画法与识别","stars":4,"tags":["易错"],"f":"长对正高平齐宽相等","module":"几何","grade":"九年级","semIdx":5},{"id":"K9-9-03","unit":"U9-9","name":"由三视图还原几何体","stars":3,"tags":[],"f":"俯视图定底，主左定高","module":"几何","grade":"九年级","semIdx":5}],"edges":[{"s":"K7-1-03","t":"K7-2-03","ty":"dep"},{"s":"K7-2-03","t":"K8-4-03","ty":"dep"},{"s":"K8-4-01","t":"K8-4-02","ty":"dep"},{"s":"K8-4-02","t":"K8-4-04","ty":"dep"},{"s":"K8-4-04","t":"K8-5-02","ty":"dep"},{"s":"K8-5-02","t":"K8-5-04","ty":"dep"},{"s":"K7-1-02","t":"K7-6-01","ty":"dep"},{"s":"K7-6-01","t":"K8-6-01","ty":"dep"},{"s":"K8-6-02","t":"K8-6-03","ty":"dep"},{"s":"K7-3-02","t":"K7-8-02","ty":"dep"},{"s":"K7-3-02","t":"K7-9-02","ty":"dep"},{"s":"K7-9-02","t":"K7-9-03","ty":"dep"},{"s":"K7-8-02","t":"K9-1-01","ty":"dep"},{"s":"K9-1-01","t":"K9-1-02","ty":"dep"},{"s":"K9-1-02","t":"K9-1-03","ty":"dep"},{"s":"K7-3-03","t":"K7-8-03","ty":"dep"},{"s":"K9-1-01","t":"K9-1-04","ty":"dep"},{"s":"K7-7-01","t":"K8-9-01","ty":"dep"},{"s":"K8-9-01","t":"K8-9-02","ty":"dep"},{"s":"K8-9-02","t":"K8-9-03","ty":"dep"},{"s":"K8-9-02","t":"K8-9-04","ty":"dep"},{"s":"K8-9-01","t":"K9-2-01","ty":"dep"},{"s":"K9-2-01","t":"K9-2-02","ty":"dep"},{"s":"K9-2-01","t":"K9-2-05","ty":"dep"},{"s":"K8-9-03","t":"K9-2-02","ty":"dep"},{"s":"K8-9-03","t":"K9-6-01","ty":"dep"},{"s":"K9-6-01","t":"K9-6-03","ty":"dep"},{"s":"K7-4-03","t":"K7-5-02","ty":"dep"},{"s":"K7-5-04","t":"K8-1-02","ty":"dep"},{"s":"K8-1-01","t":"K8-3-02","ty":"dep"},{"s":"K8-1-02","t":"K8-2-01","ty":"dep"},{"s":"K8-2-01","t":"K8-2-02","ty":"dep"},{"s":"K8-2-02","t":"K8-2-04","ty":"dep"},{"s":"K8-2-02","t":"K8-8-01","ty":"dep"},{"s":"K8-8-01","t":"K8-8-03","ty":"dep"},{"s":"K8-8-03","t":"K8-8-04","ty":"dep"},{"s":"K8-8-02","t":"K8-8-04","ty":"dep"},{"s":"K8-1-01","t":"K8-7-01","ty":"dep"},{"s":"K8-7-01","t":"K8-7-03","ty":"dep"},{"s":"K8-7-01","t":"K9-8-03","ty":"dep"},{"s":"K9-8-01","t":"K9-8-02","ty":"dep"},{"s":"K9-8-02","t":"K9-8-03","ty":"dep"},{"s":"K9-8-03","t":"K9-8-04","ty":"dep"},{"s":"K8-3-01","t":"K9-3-01","ty":"dep"},{"s":"K8-3-01","t":"K9-4-01","ty":"dep"},{"s":"K8-7-01","t":"K9-4-01","ty":"dep"},{"s":"K9-4-01","t":"K9-4-02","ty":"dep"},{"s":"K9-4-02","t":"K9-4-03","ty":"dep"},{"s":"K9-4-03","t":"K9-4-04","ty":"dep"},{"s":"K8-2-02","t":"K9-7-01","ty":"dep"},{"s":"K9-7-01","t":"K9-7-03","ty":"dep"},{"s":"K9-7-01","t":"K9-7-04","ty":"dep"},{"s":"K9-7-03","t":"K9-7-05","ty":"dep"},{"s":"K7-10-02","t":"K8-10-01","ty":"dep"},{"s":"K7-10-03","t":"K8-10-03","ty":"dep"},{"s":"K7-10-02","t":"K9-5-02","ty":"dep"},{"s":"K9-7-03","t":"K9-2-05","ty":"cross"},{"s":"K9-7-03","t":"K9-4-03","ty":"cross"},{"s":"K9-8-04","t":"K9-7-05","ty":"cross"},{"s":"K8-7-03","t":"K9-4-01","ty":"cross"},{"s":"K8-4-04","t":"K9-1-01","ty":"cross"},{"s":"K8-5-04","t":"K9-1-04","ty":"cross"},{"s":"K8-9-05","t":"K9-6-03","ty":"cross"},{"s":"K9-4-02","t":"K9-8-03","ty":"cross"},{"s":"K8-3-04","t":"K9-2-05","ty":"cross"},{"s":"K8-8-04","t":"K9-3-03","ty":"cross"},{"s":"K7-10-03","t":"K9-5-02","ty":"cross"},{"s":"K9-2-04","t":"K7-9-04","ty":"cross"},{"s":"K9-6-02","t":"K8-9-02","ty":"cross"},{"s":"K8-2-04","t":"K9-3-03","ty":"cross"},{"s":"K8-9-04","t":"K9-2-03","ty":"cross"}]};
+</script>
+<script>
+/* ==================== PWA：Service Worker 注册（仅 http(s) 环境） ==================== */
+if("serviceWorker" in navigator && /^https?:$/.test(location.protocol)){
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("sw.js").then(reg => {
+      console.log("[PWA] service worker 已注册，可离线访问");
+      // 线上更新检测：新 SW 安装完成 → 提示刷新（缓存版本号随内容哈希自动变化）
+      reg.addEventListener("updatefound", () => {
+        const nw = reg.installing;
+        if(!nw) return;
+        nw.addEventListener("statechange", () => {
+          if(nw.state === "installed" && navigator.serviceWorker.controller){
+            toast("✨ 发现新版本，刷新页面即可更新");
+          }
+        });
+      });
+    }).catch(err => console.warn("[PWA] SW 注册失败：", err));
+  });
+}
+/* iOS 环境识别：独立 App（主屏幕图标打开）与 Safari 浏览器存储相互隔离 */
+const IS_IOS = /iP(hone|ad|od)/.test(navigator.userAgent);
+const IS_STANDALONE = (navigator.standalone === true) ||
+  (window.matchMedia && window.matchMedia("(display-mode: standalone)").matches);
+const KP = {}, UNIT = {}, KIDS = DATA.kps.map(k => k.id);
+DATA.kps.forEach(k => KP[k.id] = k);
+DATA.units.forEach(u => UNIT[u.id] = u);
+const $ = s => document.querySelector(s);
+const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const nl2br = s => esc(s).replace(/\n/g, "<br>");
+const starsOf = n => "★".repeat(n) + "☆".repeat(5 - n);
+const tierOf = k => k.stars >= 5 ? "high" : k.stars >= 3 ? "mid" : "low";
+const MODULE_COLOR = {"代数":"var(--m-alg)","几何":"var(--m-geo)","统计概率":"var(--m-stat)","综合实践":"var(--m-gen)"};
+const TAG_ICON = {"高频":["★","tag-gj"],"重难点":["◆","tag-nd"],"易错":["▲","tag-yc"]};
+const ST_LABEL = {s:"熟练", m:"模糊", w:"未掌握"};
+const STORE_KEY = "dgMathMap.v1";
+const toastEl = $("#toast");
+let toastTimer = null;
+function toast(msg){
+  toastEl.textContent = msg;
+  toastEl.classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => toastEl.classList.remove("show"), 2200);
+}
+
+/* ==================== 状态存储 ==================== */
+let STATES = {};
+function loadStates(){
+  try{
+    const raw = localStorage.getItem(STORE_KEY);
+    if(!raw) return {};
+    const obj = JSON.parse(raw);
+    const out = {};
+    for(const k in obj){
+      if(KIDS.includes(k) && ["s","m","w"].includes(obj[k])) out[k] = obj[k];
+    }
+    return out;
+  }catch(e){ return {}; }
+}
+function saveStates(){
+  try{ localStorage.setItem(STORE_KEY, JSON.stringify(STATES)); }
+  catch(e){ toast("⚠ 存储失败：浏览器可能处于隐私模式"); }
+}
+function setState(kid, val){
+  if(val === "" || STATES[kid] === val) delete STATES[kid];   // 点“未自检”或重复点同一状态 → 回到未自检
+  else STATES[kid] = val;
+  saveStates();
+  refreshKpRow(kid);
+  updateStats();
+}
+
+/* ==================== 统计（公式固定，不得修改） ==================== */
+function calcStats(){
+  let s = 0, m = 0, w = 0;
+  for(const kid of KIDS){
+    const v = STATES[kid];
+    if(v === "s") s++; else if(v === "m") m++; else if(v === "w") w++;
+  }
+  const total = KIDS.length;
+  const checked = s + m + w;
+  const pctChecked = total ? checked / total * 100 : 0;              // 已自检比例 = (熟练+模糊+未掌握)÷总数
+  const pctMaster = checked ? s / checked * 100 : null;              // 熟练比例 = 熟练÷已自检；全未自检显示 --
+  return {s, m, w, total, checked, pctChecked, pctMaster};
+}
+function updateStats(){
+  const st = calcStats();
+  $("#barChecked").style.width = st.pctChecked.toFixed(1) + "%";
+  $("#numChecked").textContent = st.pctChecked.toFixed(1) + "%";
+  $("#barMaster").style.width = (st.pctMaster == null ? 0 : st.pctMaster.toFixed(1)) + "%";
+  $("#numMaster").textContent = st.pctMaster == null ? "--" : st.pctMaster.toFixed(1) + "%";
+  // 模块统计
+  const mods = {};
+  DATA.kps.forEach(k => {
+    const o = mods[k.module] = mods[k.module] || {total:0, checked:0, s:0};
+    o.total++;
+    const v = STATES[k.id];
+    if(v){ o.checked++; if(v === "s") o.s++; }
+  });
+  $("#modStats").innerHTML = Object.keys(mods).map(name => {
+    const o = mods[name];
+    const rate = o.checked ? (o.s / o.checked * 100).toFixed(0) + "%" : "--";
+    return `<div class="ms-chip"><b style="color:${MODULE_COLOR[name]}">${esc(name)}</b>已自检 ${o.checked}/${o.total} · 熟练率 ${rate}</div>`;
+  }).join("");
+  // 薄弱清单：未掌握 + 高频
+  const weak = DATA.kps.filter(k => STATES[k.id] === "w" && (k.stars >= 5 || k.tags.includes("高频")));
+  $("#weakList").innerHTML = weak.length
+    ? weak.map(k => `<div class="weak-item" data-goto="${k.id}">❌ <b>${esc(k.name)}</b>（${esc(UNIT[k.unit].name)} · ${starsOf(k.stars)}）</div>`).join("")
+    : `<div class="weak-none">✓ 暂无“未掌握的高频考点”，继续保持。</div>`;
+  // 方格卡片 & 清单头 计数刷新
+  document.querySelectorAll("[data-ucount]").forEach(el => {
+    const u = UNIT[el.dataset.ucount];
+    const c = u.kpIds.filter(id => STATES[id]).length;
+    el.textContent = `已自检 ${c}/${u.kpIds.length}`;
+  });
+  // 面板内知识点状态点
+  document.querySelectorAll(".p-kp .pk-st").forEach(el => {
+    const v = STATES[el.dataset.kid];
+    el.className = "pk-st" + (v ? " " + v : "");
+    el.textContent = v ? ST_LABEL[v] : "未自检";
+  });
+}
+
+/* ==================== 模块一：方格总览 ==================== */
+function unitTagsHtml(u){
+  let h = "";
+  if(u.tags.includes("高频")) h += `<span class="gold-star" title="中考高频单元">★</span>`;
+  h += `<span class="chip" style="--mc:${MODULE_COLOR[u.module]};background:${MODULE_COLOR[u.module]}">${esc(u.module)}</span>`;
+  if(u.tags.includes("重难点")) h += `<span class="badge-ico tag-ico tag-nd">◆重难点</span>`;
+  if(u.tags.includes("易错")) h += `<span class="badge-ico tag-ico tag-yc">▲易错</span>`;
+  return h;
+}
+function renderGrid(){
+  const sems = [...new Set(DATA.units.map(u => u.sem))];
+  $("#gridBox").innerHTML = sems.map(sem => {
+    const us = DATA.units.filter(u => u.sem === sem);
+    return `<div class="sem-row">
+      <div class="sem-label">${esc(sem)}<small>${esc(us[0].yearTag)}</small></div>
+      <div class="sem-cards">${us.map(u => `
+        <div class="ucard ${u.tags.includes("重难点") ? "t-hard" : ""} ${u.tags.includes("易错") ? "t-err" : ""}"
+             style="--mc:${MODULE_COLOR[u.module]}" data-uid="${u.id}" data-grade="${u.grade}" data-module="${u.module}" data-tier="${unitTier(u)}">
+          ${u.tags.includes("高频") ? `<span class="gold-star" title="中考高频单元">★</span>` : ""}
+          <div class="u-name">${esc(u.name)}</div>
+          <div class="u-meta"><span class="chip" style="background:${MODULE_COLOR[u.module]}">${esc(u.module)}</span>
+            ${u.tags.includes("重难点") ? `<span class="tag-ico tag-nd">◆重难点</span>` : ""}
+            ${u.tags.includes("易错") ? `<span class="tag-ico tag-yc">▲易错</span>` : ""}</div>
+          <div class="u-kpnum">${u.kpIds.length} 个核心知识点</div>
+          <div class="u-check" data-ucount="${u.id}"></div>
+          <span class="year-tag">${esc(u.yearTag)}</span>
+        </div>`).join("")}
+      </div>
+    </div>`;
+  }).join("");
+  document.querySelectorAll(".ucard").forEach(c =>
+    c.addEventListener("click", () => openPanel(c.dataset.uid)));
+}
+function unitTier(u){
+  const mx = Math.max(...u.kpIds.map(id => KP[id].stars));
+  return mx >= 5 ? "high" : mx >= 3 ? "mid" : "low";
+}
+
+/* ==================== 模块二：知识网格图 ==================== */
+const svg = $("#netSvg");
+const NS = "http://www.w3.org/2000/svg";
+let nodePos = {}, nodeEls = {}, edgeEls = [], selectedKid = null;
+let vb = {x:0, y:0, w:1700, h:980};
+let netBuilt = false, isMobileNet = false;
+
+function seedRand(seed){
+  let t = seed >>> 0;
+  return function(){
+    t += 0x6D2B79F5;
+    let r = Math.imul(t ^ t >>> 15, 1 | t);
+    r ^= r + Math.imul(r ^ r >>> 7, 61 | r);
+    return ((r ^ r >>> 14) >>> 0) / 4294967296;
+  };
+}
+function computeLayout(mobile){
+  const W = mobile ? 840 : 1750, H = mobile ? 1900 : 1060;
+  const rand = seedRand(20260928);
+  // 单元锚点：桌面按学期分列；手机双列竖排（按单元顺序均布，杜绝槽位重叠）
+  const anchors = {};
+  const semList = [...new Set(DATA.units.map(u => u.semIdx))];
+  if(mobile){
+    const cols = [[], []];
+    semList.forEach(si => DATA.units.filter(u => u.semIdx === si).forEach(u => cols[si % 2].push(u)));
+    cols.forEach((col, ci) => col.forEach((u, j) => {
+      anchors[u.id] = {x: 150 + ci * (W - 300) + (rand() - .5) * 30,
+                       y: 110 + j * (H - 220) / Math.max(col.length - 1, 1) + (rand() - .5) * 24};
+    }));
+  }else{
+    semList.forEach(si => {
+      const us = DATA.units.filter(u => u.semIdx === si);
+      us.forEach((u, j) => {
+        anchors[u.id] = {x: 150 + si * (W - 300) / (semList.length - 1) + (rand() - .5) * 40,
+                         y: 130 + j * (H - 260) / Math.max(us.length - 1, 1) + (rand() - .5) * 30};
+      });
+    });
+  }
+  // 节点初始化：绕单元锚点小圈
+  const nodes = DATA.kps.map((k, i) => {
+    const a = anchors[k.unit];
+    const ang = i * 2.399963; // 黄金角
+    const r = 34 + rand() * 26;
+    return {id:k.id, stars:k.stars, unit:k.unit,
+            x:a.x + Math.cos(ang) * r, y:a.y + Math.sin(ang) * r, fx:0, fy:0, ax:a.x, ay:a.y};
+  });
+  const pos = {};
+  nodes.forEach(n => pos[n.id] = n);
+  const edges = DATA.edges.map(e => ({s:pos[e.s], t:pos[e.t], ty:e.ty}));
+  // 简易力导向：斥力 + 弹簧 + 单元锚定 + 核心居中
+  const CX = W / 2, CY = H / 2;
+  for(let it = 0; it < 240; it++){
+    nodes.forEach(n => { n.fx = 0; n.fy = 0; });
+    for(let i = 0; i < nodes.length; i++){
+      for(let j = i + 1; j < nodes.length; j++){
+        const a = nodes[i], b = nodes[j];
+        let dx = a.x - b.x, dy = a.y - b.y;
+        let d2 = dx * dx + dy * dy;
+        if(d2 > 90000) continue;             // 斥力只在 300 内生效，避免边缘簇被全图推挤
+        if(d2 < 1){ dx = rand() - .5; dy = rand() - .5; d2 = 1; }
+        let f = Math.min(5200 / d2, 3.2);
+        if(a.unit !== b.unit) f *= 1.7;   // 不同单元节点更强斥力，领地彼此分开
+        a.fx += dx * f * .05; a.fy += dy * f * .05;
+        b.fx -= dx * f * .05; b.fy -= dy * f * .05;
+      }
+    }
+    edges.forEach(e => {
+      const L = e.ty === "dep" ? 88 : 150;
+      const dx = e.t.x - e.s.x, dy = e.t.y - e.s.y;
+      const d = Math.max(Math.sqrt(dx * dx + dy * dy), 1);
+      const f = (d - L) * 0.012;
+      e.s.fx += dx / d * f; e.s.fy += dy / d * f;
+      e.t.fx -= dx / d * f; e.t.fy -= dy / d * f;
+    });
+    nodes.forEach(n => {
+      n.fx += (n.ax - n.x) * 0.04; n.fy += (n.ay - n.y) * 0.04;   // 锚定收紧，领地更紧凑
+      const g = n.stars >= 4 ? 0.004 : 0.0012;      // 高频主干向中心聚拢
+      n.fx += (CX - n.x) * g; n.fy += (CY - n.y) * g;
+      n.x += n.fx; n.y += n.fy;
+      n.x = Math.max(78, Math.min(W - 78, n.x));
+      n.y = Math.max(70, Math.min(H - 76, n.y));
+    });
+  }
+  placeLabels(nodes);
+  return {W, H, nodes, edges};
+}
+function wrapLabel(name){
+  // 完整显示：按 ≤8 字折行，最多 3 行，优先在“（”前断行
+  const L = [];
+  let s = name;
+  while(s.length > 8 && L.length < 2){
+    let cut = 8;
+    const brk = s.lastIndexOf("（", 8);
+    if(brk >= 4) cut = brk;
+    L.push(s.slice(0, cut));
+    s = s.slice(cut);
+  }
+  if(s.length) L.push(s);
+  return L;
+}
+/* 标签避碰：上下=竖排（窄列），侧方=横排向外；按星级贪心放置，重叠>35% 才隐藏 */
+function placeLabels(nodes){
+  const FS = 11.5, LH = 12.5, VW = 14, VLH = 12.5, CPC = 9;  // 竖排每列≤9字
+  const rects = [];
+  nodes.forEach(n => {
+    const r = 6 + n.stars * 2.6 + 5;   // 节点圆作为障碍（略外扩）
+    rects.push({x1:n.x - r, y1:n.y - r, x2:n.x + r, y2:n.y + r});
+  });
+  const sorted = [...nodes].sort((a, b) => b.stars - a.stars || (a.id < b.id ? -1 : 1));
+  sorted.forEach((n, idx) => {
+    const name = KP[n.id].name;
+    const r = 6 + n.stars * 2.6;
+    // 竖排尺寸（上/下候选）
+    const cols = Math.ceil(name.length / CPC);
+    const vw = cols * VW + 4, vh = Math.min(CPC, name.length) * VLH + 4;
+    // 横排尺寸（侧方候选）
+    const lines = wrapLabel(name);
+    const hw = Math.max(...lines.map(s => s.length)) * FS + 6;
+    const hh = lines.length * LH + 2;
+    const cands = [
+      {side:"below", x1:n.x - vw/2, y1:n.y + r + 4, x2:n.x + vw/2, y2:n.y + r + 4 + vh},
+      {side:"above", x1:n.x - vw/2, y1:n.y - r - 4 - vh, x2:n.x + vw/2, y2:n.y - r - 4},
+      {side:"right", x1:n.x + r + 5, y1:n.y - hh/2, x2:n.x + r + 5 + hw, y2:n.y + hh/2},
+      {side:"left",  x1:n.x - r - 5 - hw, y1:n.y - hh/2, x2:n.x - r - 5, y2:n.y + hh/2},
+    ];
+    const order = idx % 2 === 0 ? [0, 1, 2, 3] : [1, 0, 3, 2];  // 交替优先方向
+    let best = cands[0], bestOv = Infinity;
+    for(const oi of order){
+      const c = cands[oi];
+      let ov = 0;
+      for(const rc of rects){
+        const ix = Math.min(c.x2, rc.x2) - Math.max(c.x1, rc.x1);
+        const iy = Math.min(c.y2, rc.y2) - Math.max(c.y1, rc.y1);
+        if(ix > 0 && iy > 0) ov += ix * iy;
+      }
+      if(ov === 0){ best = c; bestOv = 0; break; }
+      if(ov < bestOv){ bestOv = ov; best = c; }
+    }
+    const area = (best.side === "below" || best.side === "above") ? vw * vh : hw * hh;
+    n.lbl = {side:best.side, hide:bestOv > area * 0.35,
+             rect:{x1:best.x1, y1:best.y1, x2:best.x2, y2:best.y2}};
+    rects.push(n.lbl.rect);
+  });
+}
+/* 凸包（单调链）+ 外扩 + 平滑曲线 → 单元领地方域 */
+function convexHull(points){
+  const pts = [...points].sort((a, b) => a.x - b.x || a.y - b.y);
+  if(pts.length <= 2) return pts;
+  const cross = (o, a, b) => (a.x - o.x) * (b.y - o.y) - (a.y - o.y) * (b.x - o.x);
+  const lower = [], upper = [];
+  for(const p of pts){
+    while(lower.length >= 2 && cross(lower[lower.length - 2], lower[lower.length - 1], p) <= 0) lower.pop();
+    lower.push(p);
+  }
+  for(let i = pts.length - 1; i >= 0; i--){
+    const p = pts[i];
+    while(upper.length >= 2 && cross(upper[upper.length - 2], upper[upper.length - 1], p) <= 0) upper.pop();
+    upper.push(p);
+  }
+  lower.pop(); upper.pop();
+  return lower.concat(upper);
+}
+function paddedHull(pts, pad){
+  const hull = convexHull(pts);
+  if(!hull.length) return null;
+  if(hull.length === 1){  // 单点单元 → 圆角多边形
+    const c = hull[0], out = [];
+    for(let i = 0; i < 8; i++){ const a = i / 8 * Math.PI * 2; out.push({x:c.x + Math.cos(a) * pad * 1.8, y:c.y + Math.sin(a) * pad * 1.8}); }
+    return out;
+  }
+  if(hull.length === 2){  // 两点单元 → 胶囊形
+    const [a, b] = hull, dx = b.x - a.x, dy = b.y - a.y, d = Math.hypot(dx, dy) || 1;
+    if(d < 0.01){  // 两点重合退化为单点
+      const out = [];
+      for(let i = 0; i < 8; i++){ const t = i / 8 * Math.PI * 2; out.push({x:a.x + Math.cos(t) * pad * 1.8, y:a.y + Math.sin(t) * pad * 1.8}); }
+      return out;
+    }
+    const nx = -dy / d, ny = dx / d, p2 = pad * 1.5;
+    return [{x:a.x + nx*p2, y:a.y + ny*p2}, {x:b.x + nx*p2, y:b.y + ny*p2},
+            {x:b.x - nx*p2, y:b.y - ny*p2}, {x:a.x - nx*p2, y:a.y - ny*p2}];
+  }
+  const cx = hull.reduce((s, p) => s + p.x, 0) / hull.length;
+  const cy = hull.reduce((s, p) => s + p.y, 0) / hull.length;
+  return hull.map(p => { const dx = p.x - cx, dy = p.y - cy, d = Math.hypot(dx, dy) || 1;
+    return {x:p.x + dx / d * pad, y:p.y + dy / d * pad}; });
+}
+function smoothHullPath(pts){  // 过各边中点、顶点作控制点的闭合平滑曲线
+  const n = pts.length;
+  const mid = i => ({x:(pts[i % n].x + pts[(i + 1) % n].x) / 2, y:(pts[i % n].y + pts[(i + 1) % n].y) / 2});
+  const m0 = mid(0);
+  let d = `M${m0.x.toFixed(1)},${m0.y.toFixed(1)}`;
+  for(let i = 0; i < n; i++){
+    const m2 = mid(i + 1), v = pts[(i + 1) % n];
+    d += ` Q${v.x.toFixed(1)},${v.y.toFixed(1)} ${m2.x.toFixed(1)},${m2.y.toFixed(1)}`;
+  }
+  return d + " Z";
+}
+function buildNetwork(){
+  const mobile = window.innerWidth < 900;
+  isMobileNet = mobile;
+  const lay = computeLayout(mobile);
+  window.NET_W0 = lay.W;
+  vb = {x:0, y:0, w:lay.W, h:lay.H};
+  svg.classList.remove("tier-4", "tier-3", "show-all");
+  setViewBox();
+  svg.innerHTML = "";
+  nodePos = {}; nodeEls = {}; edgeEls = []; selectedKid = null;
+
+  const defs = document.createElementNS(NS, "defs");
+  defs.innerHTML = `<marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+    <path d="M0,0 L10,5 L0,10 z" fill="#B08A63"></path></marker>`;
+  svg.appendChild(defs);
+  const gHull = document.createElementNS(NS, "g"), gEdge = document.createElementNS(NS, "g"), gNode = document.createElementNS(NS, "g");
+  svg.appendChild(gHull); svg.appendChild(gEdge); svg.appendChild(gNode);
+
+  lay.nodes.forEach(n => nodePos[n.id] = n);
+  // 单元领地多边形：该单元全部知识点的外扩平滑凸包
+  const HULL_DARK = {"代数":"#7A5230","几何":"#42551F","统计概率":"#B35A20","综合实践":"#7A7060"};
+  DATA.units.forEach(u => {
+    const pts = u.kpIds.map(id => nodePos[id]).filter(Boolean);
+    const hull = paddedHull(pts, 30);
+    if(!hull) return;
+    const g = document.createElementNS(NS, "g");
+    g.setAttribute("class", "hull-g");
+    g.dataset.uid = u.id; g.dataset.grade = u.grade; g.dataset.module = u.module; g.dataset.tier = unitTier(u);
+    const path = document.createElementNS(NS, "path");
+    path.setAttribute("d", smoothHullPath(hull));
+    path.setAttribute("class", "hull");
+    path.style.fill = MODULE_COLOR[u.module];
+    path.style.stroke = MODULE_COLOR[u.module];
+    path.addEventListener("click", ev => { ev.stopPropagation(); openPanel(u.id); });
+    g.appendChild(path);
+    // 单元名标签：放在多边形顶部居中
+    const topPt = hull.reduce((m, p) => p.y < m.y ? p : m, hull[0]);
+    const lt = document.createElementNS(NS, "text");
+    lt.setAttribute("x", topPt.x); lt.setAttribute("y", topPt.y - 9);
+    lt.setAttribute("text-anchor", "middle"); lt.setAttribute("class", "hull-lbl");
+    lt.style.fill = HULL_DARK[u.module];
+    lt.textContent = u.name;
+    lt.addEventListener("click", ev => { ev.stopPropagation(); openPanel(u.id); });
+    g.appendChild(lt);
+    gHull.appendChild(g);
+  });
+  lay.edges.forEach(e => {
+    const ln = document.createElementNS(NS, "line");
+    ln.setAttribute("x1", e.s.x); ln.setAttribute("y1", e.s.y);
+    ln.setAttribute("x2", e.t.x); ln.setAttribute("y2", e.t.y);
+    ln.setAttribute("class", "edge " + e.ty);
+    if(e.ty === "dep") ln.setAttribute("marker-end", "url(#arr)");
+    ln.dataset.s = e.s.id; ln.dataset.t = e.t.id;
+    gEdge.appendChild(ln);
+    edgeEls.push(ln);
+  });
+  lay.nodes.forEach(n => {
+    const k = KP[n.id];
+    const g = document.createElementNS(NS, "g");
+    g.setAttribute("class", "node");
+    g.dataset.kid = n.id; g.dataset.grade = k.grade; g.dataset.module = k.module; g.dataset.tier = tierOf(k);
+    const r = 6 + n.stars * 2.6;
+    const c = document.createElementNS(NS, "circle");
+    c.setAttribute("cx", n.x); c.setAttribute("cy", n.y); c.setAttribute("r", r);
+    c.style.fill = MODULE_COLOR[k.module];
+    g.appendChild(c);
+    // 徽标（★◆▲）画在节点圆内，避免与竖排标签冲突
+    const sym = document.createElementNS(NS, "text");
+    const symSize = Math.min(9.5, r * 0.58);
+    sym.setAttribute("x", n.x); sym.setAttribute("y", n.y + symSize * 0.36);
+    sym.setAttribute("text-anchor", "middle"); sym.setAttribute("class", "sym");
+    sym.style.fontSize = symSize + "px";
+    sym.textContent = k.tags.map(t => TAG_ICON[t][0]).join("");
+    g.appendChild(sym);
+    // 标签：上/下=竖排，侧方=横排向外
+    const lb = n.lbl;
+    const t = document.createElementNS(NS, "text");
+    let lblCls = n.stars >= 5 ? "" : n.stars === 4 ? "lbl-t4" : "lbl-t3";
+    if(lb.hide) lblCls = (lblCls ? lblCls + " " : "") + "lbl-hide";
+    if(lb.side === "below" || lb.side === "above"){
+      const CPC = 9, VW = 14, VLH = 12.5;
+      const cols = Math.ceil(k.name.length / CPC);
+      t.setAttribute("text-anchor", "middle");
+      if(lblCls) t.setAttribute("class", lblCls + " lbl-v"); else t.setAttribute("class", "lbl-v");
+      for(let ci = 0; ci < cols; ci++){
+        const colChars = k.name.slice(ci * CPC, (ci + 1) * CPC);
+        const cx = n.x + ((cols - 1) / 2 - ci) * VW;
+        for(let i = 0; i < colChars.length; i++){
+          const ts = document.createElementNS(NS, "tspan");
+          ts.setAttribute("x", cx);
+          ts.setAttribute("y", lb.side === "below"
+            ? n.y + r + 11 + i * VLH
+            : n.y - r - 11 - (colChars.length - 1 - i) * VLH);
+          ts.textContent = colChars[i];
+          t.appendChild(ts);
+        }
+      }
+    }else{
+      const out = lb.side === "right";
+      t.setAttribute("text-anchor", out ? "start" : "end");
+      if(lblCls) t.setAttribute("class", lblCls);
+      const lines = wrapLabel(k.name);
+      const baseY = n.y - (lines.length - 1) * 12.5 / 2 + 4;
+      lines.forEach((lnTxt, i) => {
+        const ts = document.createElementNS(NS, "tspan");
+        ts.setAttribute("x", out ? n.x + r + 7 : n.x - r - 7);
+        ts.setAttribute("y", baseY + i * 12.5);
+        ts.textContent = lnTxt;
+        t.appendChild(ts);
+      });
+    }
+    g.appendChild(t);
+    g.addEventListener("mouseenter", ev => showTip(k, ev));
+    g.addEventListener("mousemove", ev => moveTip(ev));
+    g.addEventListener("mouseleave", hideTip);
+    g.addEventListener("click", ev => { ev.stopPropagation(); onNodeClick(k); });
+    gNode.appendChild(g);
+    nodeEls[n.id] = g;
+  });
+  netBuilt = true;
+}
+function setViewBox(){
+  svg.setAttribute("viewBox", `${vb.x} ${vb.y} ${vb.w} ${vb.h}`);
+  // 标签分级：缩小看全貌只留 5★，放大逐级显现 4★ / 3★
+  const w0 = window.NET_W0 || 1700;
+  svg.classList.toggle("tier-4", vb.w < w0 * 0.78);
+  svg.classList.toggle("tier-3", vb.w < w0 * 0.5);
+}
+function svgPoint(clientX, clientY){
+  const r = svg.getBoundingClientRect();
+  return {x: vb.x + (clientX - r.left) / r.width * vb.w,
+          y: vb.y + (clientY - r.top) / r.height * vb.h};
+}
+function zoomAt(px, py, k){
+  const nw = Math.min(Math.max(vb.w * k, 260), 2200);
+  const nk = nw / vb.w;
+  vb.x = px - (px - vb.x) * nk;
+  vb.y = py - (py - vb.y) * nk;
+  vb.w = nw; vb.h = vb.h * nk;
+  setViewBox();
+}
+function onNodeClick(k){
+  highlightNode(k.id);
+  openPanel(k.unit, k.id);
+}
+function highlightNode(kid){
+  selectedKid = kid;
+  const linked = new Set([kid]);
+  edgeEls.forEach(ln => {
+    const hit = ln.dataset.s === kid || ln.dataset.t === kid;
+    ln.classList.toggle("hl", hit);
+    ln.classList.toggle("e-dim", !hit);
+    if(hit){ linked.add(ln.dataset.s); linked.add(ln.dataset.t); }
+  });
+  Object.keys(nodeEls).forEach(id => {
+    nodeEls[id].classList.toggle("hl", id === kid);
+    nodeEls[id].classList.toggle("n-dim", !linked.has(id));
+  });
+}
+function clearHighlight(){
+  selectedKid = null;
+  edgeEls.forEach(ln => { ln.classList.remove("hl"); ln.classList.remove("e-dim"); });
+  Object.values(nodeEls).forEach(g => { g.classList.remove("hl"); g.classList.remove("n-dim"); });
+  applyFilters(); // 恢复筛选态
+}
+function centerOnNode(kid){
+  const n = nodePos[kid];
+  if(!n) return;
+  const w = Math.min(vb.w, 560);
+  vb = {x: n.x - w / 2, y: n.y - w * svg.getBoundingClientRect().height / svg.getBoundingClientRect().width / 2,
+        w: w, h: w * svg.getBoundingClientRect().height / svg.getBoundingClientRect().width};
+  setViewBox();
+}
+/* 拖拽平移 + 双指缩放 */
+const pointers = new Map();
+let panStart = null, pinchStart = null;
+svg.addEventListener("pointerdown", e => {
+  if(e.target.closest(".node")) return;
+  svg.setPointerCapture(e.pointerId);
+  pointers.set(e.pointerId, {x: e.clientX, y: e.clientY});
+  if(pointers.size === 1){
+    panStart = {x: e.clientX, y: e.clientY, vx: vb.x, vy: vb.y};
+    svg.classList.add("panning");
+  }else if(pointers.size === 2){
+    const ps = [...pointers.values()];
+    pinchStart = {d: Math.hypot(ps[0].x - ps[1].x, ps[0].y - ps[1].y), w: vb.w, h: vb.h, x: vb.x, y: vb.y,
+                  cx: (ps[0].x + ps[1].x) / 2, cy: (ps[0].y + ps[1].y) / 2};
+  }
+});
+svg.addEventListener("pointermove", e => {
+  if(!pointers.has(e.pointerId)) return;
+  pointers.set(e.pointerId, {x: e.clientX, y: e.clientY});
+  if(pointers.size === 1 && panStart){
+    const r = svg.getBoundingClientRect();
+    vb.x = panStart.vx - (e.clientX - panStart.x) / r.width * vb.w;
+    vb.y = panStart.vy - (e.clientY - panStart.y) / r.height * vb.h;
+    setViewBox();
+  }else if(pointers.size === 2 && pinchStart){
+    const ps = [...pointers.values()];
+    const d = Math.hypot(ps[0].x - ps[1].x, ps[0].y - ps[1].y);
+    const k = pinchStart.d / Math.max(d, 20);
+    const nw = Math.min(Math.max(pinchStart.w * k, 260), 2200);
+    const nk = nw / pinchStart.w;
+    const p = svgPoint((ps[0].x + ps[1].x) / 2, (ps[0].y + ps[1].y) / 2);
+    vb.w = nw; vb.h = pinchStart.h * nk;
+    vb.x = p.x - (p.x - pinchStart.x) * nk;
+    vb.y = p.y - (p.y - pinchStart.y) * nk;
+    setViewBox();
+  }
+});
+function endPointer(e){
+  pointers.delete(e.pointerId);
+  if(pointers.size === 0){ panStart = null; pinchStart = null; svg.classList.remove("panning"); }
+}
+svg.addEventListener("pointerup", endPointer);
+svg.addEventListener("pointercancel", endPointer);
+svg.addEventListener("click", e => { if(!e.target.closest(".node")) clearHighlight(); });
+/* 平滑缩放：指数阻尼，触控板/鼠标滚轮都跟手 */
+svg.addEventListener("wheel", e => {
+  e.preventDefault();
+  let dy = e.deltaY;
+  if(e.deltaMode === 1) dy *= 16;               // 火狐行模式
+  dy = Math.max(-120, Math.min(120, dy));       // 钳制单次事件幅度
+  const k = Math.exp(dy * 0.0016);              // 平滑指数因子
+  const p = svgPoint(e.clientX, e.clientY);
+  zoomAt(p.x, p.y, k);
+}, {passive:false});
+$("#zoomIn").addEventListener("click", () => zoomAt(vb.x + vb.w / 2, vb.y + vb.h / 2, 0.86));
+$("#zoomOut").addEventListener("click", () => zoomAt(vb.x + vb.w / 2, vb.y + vb.h / 2, 1.16));
+$("#zoomReset").addEventListener("click", () => { vb = {x:0, y:0, w:isMobileNet ? 840 : 1750, h:isMobileNet ? 1900 : 1060}; setViewBox(); });
+$("#lblToggle").addEventListener("click", () => {
+  svg.classList.toggle("show-all");
+  $("#lblToggle").style.color = svg.classList.contains("show-all") ? "var(--orange)" : "";
+  $("#lblToggle").style.borderColor = svg.classList.contains("show-all") ? "var(--orange)" : "";
+});
+
+/* 悬浮提示 */
+const tip = $("#tip");
+function showTip(k, ev){
+  tip.innerHTML = `<div class="t-name">${esc(k.name)}</div>
+    <div class="t-stars">${starsOf(k.stars)}</div>
+    ${k.f ? `<div class="t-f">核心公式：${esc(k.f)}</div>` : ""}
+    <div class="t-tags">${esc(UNIT[k.unit].name)}${k.tags.length ? " · " + k.tags.map(t => TAG_ICON[t][0] + t).join(" ") : ""} · 点击查看详情</div>`;
+  tip.style.display = "block";
+  moveTip(ev);
+}
+function moveTip(ev){
+  const x = Math.min(ev.clientX + 14, window.innerWidth - 300);
+  const y = Math.min(ev.clientY + 14, window.innerHeight - 130);
+  tip.style.left = x + "px"; tip.style.top = y + "px";
+}
+function hideTip(){ tip.style.display = "none"; }
+
+/* ==================== 模块三：自检清单 ==================== */
+function renderChecklist(){
+  const sems = [...new Set(DATA.units.map(u => u.sem))];
+  $("#checkBox").innerHTML = sems.map(sem => `
+    <h3 class="sem-title">${esc(sem)}</h3>
+    ${DATA.units.filter(u => u.sem === sem).map(u => `
+      <div class="unit-block" data-ublock="${u.id}">
+        <button class="unit-head" data-uhead="${u.id}">
+          <span class="caret">▶</span>
+          <span class="uh-name">${esc(u.name)}</span>
+          ${u.tags.map(t => `<span class="tag-ico ${TAG_ICON[t][1]}">${TAG_ICON[t][0]}${t}</span>`).join("")}
+          <span class="uh-sub"><span data-ucount="${u.id}"></span></span>
+        </button>
+        <div class="unit-body">
+          ${u.kpIds.map(id => { const k = KP[id]; return `
+            <div class="kp-row" data-kid="${id}" data-grade="${k.grade}" data-module="${k.module}" data-tier="${tierOf(k)}">
+              <div class="seg" data-kid="${id}">
+                <button data-st="" title="未自检（默认）">○ 未自检</button>
+                <button data-st="s" title="熟练">✓ 熟练</button>
+                <button data-st="m" title="模糊">~ 模糊</button>
+                <button data-st="w" title="未掌握">✕ 未掌握</button>
+              </div>
+              <div class="kp-info">
+                <span class="kp-id">${id}</span>
+                <span class="kp-name" data-goto="${id}">${esc(k.name)}</span>
+                <span class="kp-stars" data-star="${id}" title="点击查看考频溯源">${starsOf(k.stars)}</span>
+                ${k.tags.map(t => `<span class="tag-ico ${TAG_ICON[t][1]}">${TAG_ICON[t][0]}${t}</span>`).join("")}
+              </div>
+            </div>`; }).join("")}
+        </div>
+      </div>`).join("")}
+  `).join("");
+  document.querySelectorAll(".unit-head").forEach(h =>
+    h.addEventListener("click", () => h.parentElement.classList.toggle("open")));
+  document.querySelectorAll(".seg button").forEach(b =>
+    b.addEventListener("click", () => setState(b.parentElement.dataset.kid, b.dataset.st)));
+  document.querySelectorAll("#checkBox [data-goto]").forEach(el =>
+    el.addEventListener("click", () => gotoNetwork(el.dataset.goto)));
+  document.querySelectorAll("[data-star]").forEach(el =>
+    el.addEventListener("click", () => openPanel(KP[el.dataset.star].unit, el.dataset.star, true)));
+}
+function refreshKpRow(kid){
+  const seg = document.querySelector(`.seg[data-kid="${kid}"]`);
+  if(seg){
+    const v = STATES[kid] || "";
+    seg.querySelectorAll("button").forEach(b => {
+      b.className = b.dataset.st && b.dataset.st === v ? "on-" + v : "";
+    });
+  }
+}
+function refreshAllKpRows(){ KIDS.forEach(refreshKpRow); }
+function gotoNetwork(kid){
+  switchView("net");
+  requestAnimationFrame(() => {
+    centerOnNode(kid);
+    highlightNode(kid);
+    openPanel(KP[kid].unit, kid);
+  });
+}
+
+/* ==================== 详情面板 ==================== */
+function openPanel(uid, kid, toFreq){
+  const u = UNIT[uid];
+  if(!u) return;
+  $("#pTitle").textContent = u.name;
+  $("#pSub").innerHTML = `<span class="chip" style="background:${MODULE_COLOR[u.module]}">${esc(u.module)}</span>
+    <span>${esc(u.sem)} · ${esc(u.yearTag)}</span>
+    ${u.tags.map(t => `<span class="tag-ico ${TAG_ICON[t][1]}">${TAG_ICON[t][0]}${t}</span>`).join("")}`;
+  $("#pBody").innerHTML = `
+    <div class="p-sec"><h4>本单元知识点</h4><div class="p-kp-list">
+      ${u.kpIds.map(id => { const k = KP[id]; return `
+        <div class="p-kp" id="dp-${id}">
+          <span class="kp-id">${id}</span><span class="pk-name">${esc(k.name)}</span>
+          <span class="kp-stars">${starsOf(k.stars)}</span>
+          ${k.tags.map(t => `<span class="tag-ico ${TAG_ICON[t][1]}">${TAG_ICON[t][0]}${t}</span>`).join("")}
+          <span class="pk-st" data-kid="${id}"></span>
+        </div>`; }).join("")}
+    </div></div>
+    <div class="p-sec"><h4>① 定义定理</h4><ul>${u.defi.map(d => `<li>${nl2br(d)}</li>`).join("")}</ul></div>
+    <div class="p-sec"><h4>② 核心公式</h4><ul>${u.formulas.map(f => `<li>${nl2br(f)}</li>`).join("")}</ul></div>
+    <div class="p-sec"><h4>③ 典型例题</h4>
+      <div class="ex-box">
+        <span class="ex-src">${esc(u.example.src)}</span>
+        <div class="ex-prob">${nl2br(u.example.prob)}</div>
+        <div class="ex-sol"><b>解析：</b>${nl2br(u.example.sol)}</div>
+      </div></div>
+    <div class="p-sec"><h4>④ 易错提醒</h4><ul class="pit">${u.pitfalls.map(p => `<li>${nl2br(p)}</li>`).join("")}</ul></div>
+    <div class="p-sec" id="pFreq"><h4>⑤ 中考考频</h4>
+      <div class="freq-txt">近5年东莞中考考查 <span class="est">${esc(u.freq.times)}</span>，估算分值权重 <span class="est">${esc(u.freq.score)}</span><br>
+      <span style="font-size:12px;color:#A08B73">${esc(DATA.meta.examNote)}</span></div>
+      <details class="trace"><summary>真题溯源清单（点击展开）</summary><p>${esc(DATA.meta.traceNote)}</p></details>
+    </div>
+    <div class="p-sec"><h4>⑥ 解题技巧</h4><ul>${u.tech.map(t => `<li>${nl2br(t)}</li>`).join("")}</ul></div>`;
+  document.body.classList.add("panel-open");
+  updateStats();
+  if(kid){
+    requestAnimationFrame(() => {
+      const row = document.getElementById("dp-" + kid);
+      if(row){ row.scrollIntoView({block:"center"}); row.classList.add("flash"); setTimeout(() => row.classList.remove("flash"), 1700); }
+    });
+  }else if(toFreq){
+    requestAnimationFrame(() => {
+      const f = document.getElementById("pFreq");
+      if(f){ f.scrollIntoView({block:"center"}); f.classList.add("flash"); setTimeout(() => f.classList.remove("flash"), 1700); }
+    });
+  }else{
+    $("#pBody").scrollTop = 0;
+  }
+}
+function closePanel(){ document.body.classList.remove("panel-open"); }
+$("#pClose").addEventListener("click", closePanel);
+$("#panelMask").addEventListener("click", closePanel);
+document.addEventListener("keydown", e => { if(e.key === "Escape") closePanel(); });
+
+/* ==================== 标签页切换 ==================== */
+function switchView(name){
+  document.querySelectorAll(".tab-btn").forEach(b => b.classList.toggle("active", b.dataset.view === name));
+  document.querySelectorAll(".view").forEach(v => v.classList.toggle("active", v.id === "view-" + name));
+  if(name === "net") requestAnimationFrame(() => { /* 确保 svg 可见后尺寸正确 */ });
+}
+$("#tabs").addEventListener("click", e => {
+  const b = e.target.closest(".tab-btn");
+  if(b) switchView(b.dataset.view);
+});
+
+/* ==================== 搜索 ==================== */
+const searchInput = $("#searchInput"), searchDrop = $("#searchDrop");
+searchInput.addEventListener("input", () => {
+  const q = searchInput.value.trim();
+  if(!q){ searchDrop.classList.remove("show"); applyFilters(); return; }
+  const hitsU = DATA.units.filter(u => u.name.includes(q));
+  const hitsK = DATA.kps.filter(k => k.name.includes(q));
+  const rows = [
+    ...hitsU.slice(0, 4).map(u => ({t:"unit", id:u.id, name:u.name, sub:u.sem + " · 单元"})),
+    ...hitsK.slice(0, 10).map(k => ({t:"kp", id:k.id, name:k.name, sub:UNIT[k.unit].name}))
+  ];
+  searchDrop.innerHTML = rows.length
+    ? rows.map(r => `<div class="sd-item" data-t="${r.t}" data-id="${r.id}">${esc(r.name)}<span class="sd-t">${esc(r.sub)}</span></div>`).join("")
+    : `<div class="sd-empty">未找到「${esc(q)}」相关知识点</div>`;
+  searchDrop.classList.add("show");
+  // 跨模块高亮：命中的保留，其余压暗
+  const okU = new Set(hitsU.map(u => u.id)), okK = new Set(hitsK.map(k => k.id));
+  const okUnits = new Set([...okU, ...hitsK.map(k => k.unit)]);
+  document.querySelectorAll(".ucard").forEach(c => c.classList.toggle("search-dim", !okUnits.has(c.dataset.uid)));
+  document.querySelectorAll(".kp-row").forEach(r => r.classList.toggle("search-dim", !okK.has(r.dataset.kid)));
+  document.querySelectorAll(".hull-g").forEach(g2 => g2.classList.toggle("search-dim", !okUnits.has(g2.dataset.uid)));
+  Object.keys(nodeEls).forEach(id => nodeEls[id].classList.toggle("search-dim", !okK.has(id)));
+});
+searchDrop.addEventListener("click", e => {
+  const item = e.target.closest(".sd-item");
+  if(!item) return;
+  searchDrop.classList.remove("show");
+  if(item.dataset.t === "unit") openPanel(item.dataset.id);
+  else gotoNetwork(item.dataset.id);
+});
+document.addEventListener("click", e => {
+  if(!e.target.closest(".search-wrap")) searchDrop.classList.remove("show");
+});
+
+/* ==================== 筛选 ==================== */
+function kpMatches(el){
+  const g = $("#fGrade").value, m = $("#fModule").value, f = $("#fFreq").value;
+  if(g && el.dataset.grade !== g) return false;
+  if(m && el.dataset.module !== m) return false;
+  if(f && el.dataset.tier !== f) return false;
+  return true;
+}
+function applyFilters(){
+  searchInput.value.trim() || document.querySelectorAll(".search-dim").forEach(el => el.classList.remove("search-dim"));
+  // 方格
+  document.querySelectorAll(".ucard").forEach(c => c.classList.toggle("fhide", !kpMatches(c)));
+  document.querySelectorAll("#gridBox .sem-row").forEach(row => {
+    row.style.display = row.querySelectorAll(".ucard:not(.fhide)").length ? "" : "none";
+  });
+  // 清单
+  document.querySelectorAll(".kp-row").forEach(r => r.classList.toggle("fhide", !kpMatches(r)));
+  document.querySelectorAll(".unit-block").forEach(b => {
+    b.style.display = b.querySelectorAll(".kp-row:not(.fhide)").length ? "" : "none";
+  });
+  document.querySelectorAll("#checkBox .sem-title").forEach(t => {
+    let n = t.nextElementSibling, any = false;
+    while(n && !n.classList.contains("sem-title")){ if(n.style.display !== "none") any = true; n = n.nextElementSibling; }
+    t.style.display = any ? "" : "none";
+  });
+  // 网格节点 + 单元领地
+  Object.values(nodeEls).forEach(g2 => g2.classList.toggle("n-dim", !kpMatches(g2)));
+  document.querySelectorAll(".hull-g").forEach(h => h.classList.toggle("h-dim", !kpMatches(h)));
+  edgeEls.forEach(ln => {
+    const a = nodeEls[ln.dataset.s], b = nodeEls[ln.dataset.t];
+    ln.classList.toggle("e-dim", (a && a.classList.contains("n-dim")) || (b && b.classList.contains("n-dim")));
+  });
+}
+["#fGrade", "#fModule", "#fFreq"].forEach(s => $(s).addEventListener("change", applyFilters));
+
+/* ==================== 导出 / 导入 / PNG ==================== */
+$("#btnExport").addEventListener("click", async () => {
+  const payload = {app:"dg-math-map", version:1, savedAt:new Date().toISOString(), states:STATES};
+  const text = JSON.stringify(payload, null, 2);
+  const fname = "东莞中考数学自检进度_" + new Date().toISOString().slice(0, 10) + ".json";
+  // iPhone/iPad 优先走系统分享：可直接「存储到文件」App（PWA 与 Safari 互传也靠它）
+  try{
+    const file = new File([text], fname, {type:"application/json"});
+    if(navigator.canShare && navigator.canShare({files:[file]})){
+      await navigator.share({files:[file], title:"自检进度备份"});
+      toast("✓ 在分享面板选「存储到文件」即可保存备份");
+      return;
+    }
+  }catch(e){
+    if(e && e.name === "AbortError") return;   // 用户取消分享
+  }
+  const blob = new Blob([text], {type:"application/json"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = fname;
+  a.click();
+  URL.revokeObjectURL(a.href);
+  if(IS_IOS) toast("✓ 已导出：在预览页右上角「分享」→「存储到文件」");
+  else toast("✓ 已导出 JSON 备份（含全部自检状态）");
+});
+$("#btnImport").addEventListener("click", () => $("#fileInput").click());
+$("#fileInput").addEventListener("change", e => {
+  const f = e.target.files[0];
+  if(!f) return;
+  const rd = new FileReader();
+  rd.onload = () => {
+    try{
+      const obj = JSON.parse(rd.result);
+      const src = obj && obj.states ? obj.states : obj;
+      const next = {};
+      for(const k in src){
+        if(KIDS.includes(k) && ["s","m","w"].includes(src[k])) next[k] = src[k];
+      }
+      STATES = next;
+      saveStates(); refreshAllKpRows(); updateStats();
+      toast(`✓ 导入成功，已覆盖 ${Object.keys(next).length} 条自检记录`);
+    }catch(err){ toast("✕ 导入失败：文件不是有效的进度 JSON"); }
+  };
+  rd.readAsText(f);
+  e.target.value = "";
+});
+/* 空白清单 PNG（A4 宽 1240px，打印用） */
+$("#btnPng").addEventListener("click", () => {
+  const W = 1240, PAD = 56, CW = W - PAD * 2;
+  const lineH = {sem:52, unit:46, kp:40};
+  let H = 210;
+  const sems = [...new Set(DATA.units.map(u => u.sem))];
+  sems.forEach(sem => {
+    H += lineH.sem;
+    DATA.units.filter(u => u.sem === sem).forEach(u => { H += lineH.unit + u.kpIds.length * lineH.kp; });
+  });
+  H += 60;
+  const cv = document.createElement("canvas");
+  const scale = 2;
+  cv.width = W * scale; cv.height = H * scale;
+  const ctx = cv.getContext("2d");
+  ctx.scale(scale, scale);
+  ctx.fillStyle = "#FFFFFF"; ctx.fillRect(0, 0, W, H);
+  const F = (px, bold, serif) => `${bold ? "700 " : ""}${px}px ${serif ? 'Georgia,"Songti SC",serif' : '"Hiragino Sans GB","Heiti SC","PingFang SC","Microsoft YaHei",sans-serif'}`;
+  let y = PAD;
+  ctx.fillStyle = "#6B4423"; ctx.font = F(34, true, true);
+  ctx.fillText("东莞中考数学知识点自检清单", PAD, y + 12);
+  y += 46;
+  ctx.font = F(17, false); ctx.fillStyle = "#8B6914";
+  ctx.fillText("生成日期：" + new Date().toLocaleDateString("zh-CN") + "　｜　对标人教版七~九年级 · 共 " + DATA.kps.length + " 个核心知识点", PAD, y + 8);
+  y += 30;
+  ctx.fillText("状态标记：☑ 熟练　◐ 模糊　✕ 未掌握（打印后在对应圆圈内打 √）", PAD, y + 8);
+  y += 26;
+  ctx.strokeStyle = "#D9D2C5"; ctx.beginPath(); ctx.moveTo(PAD, y); ctx.lineTo(W - PAD, y); ctx.stroke();
+  y += 10;
+  const optX = [W - PAD - 452, W - PAD - 336, W - PAD - 220, W - PAD - 104];
+  const optLabel = ["未自检", "熟练", "模糊", "未掌握"];
+  sems.forEach(sem => {
+    y += 8;
+    ctx.fillStyle = "#F37021"; ctx.fillRect(PAD, y + 8, 5, 24);
+    ctx.fillStyle = "#6B4423"; ctx.font = F(24, true, true);
+    ctx.fillText(sem, PAD + 14, y + 27);
+    y += lineH.sem - 8;
+    DATA.units.filter(u => u.sem === sem).forEach(u => {
+      ctx.fillStyle = "#8B6914"; ctx.font = F(20, true);
+      ctx.fillText("▸ " + u.name + "（" + u.module + "）", PAD + 6, y + 16);
+      y += lineH.unit - 6;
+      u.kpIds.forEach(id => {
+        const k = KP[id];
+        ctx.font = F(18, false); ctx.fillStyle = "#4A3420";
+        let name = k.name + "  " + "★".repeat(k.stars);
+        while(ctx.measureText(name).width > CW - 500 && name.length > 4) name = name.slice(0, -2);
+        ctx.fillText(name, PAD + 22, y + 14);
+        optX.forEach((ox, i) => {
+          ctx.strokeStyle = "#A08B73"; ctx.lineWidth = 1.4;
+          ctx.beginPath(); ctx.arc(ox, y + 8, 8, 0, Math.PI * 2); ctx.stroke();
+          ctx.fillStyle = "#8B6914"; ctx.font = F(16, false);
+          ctx.fillText(optLabel[i], ox + 14, y + 13);
+        });
+        ctx.strokeStyle = "#EFE9DF"; ctx.lineWidth = 1;
+        ctx.beginPath(); ctx.moveTo(PAD + 18, y + 26); ctx.lineTo(W - PAD, y + 26); ctx.stroke();
+        y += lineH.kp;
+      });
+    });
+  });
+  ctx.fillStyle = "#B09B7F"; ctx.font = F(15, false);
+  ctx.fillText("考频为基于近5年东莞中考真题估算（非官方分值占比）；真题题号溯源待核验。", PAD, y + 34);
+  const a = document.createElement("a");
+  a.href = cv.toDataURL("image/png");
+  a.download = "东莞中考数学自检清单_打印版.png";
+  a.click();
+  toast("✓ 已导出空白清单 PNG（宽度适配 A4 打印）");
+});
+
+/* ==================== 初始化 ==================== */
+$("#storeNote").textContent = "💾 " + DATA.meta.storeNote;
+if(IS_IOS){
+  $("#storeNote").textContent += IS_STANDALONE
+    ? " 📱 当前为 iPhone 独立 App 模式：与 Safari 浏览器存储相互隔离，进度请用「导出进度」存储到文件 App，换端用「导入进度」从文件 App 选择恢复。"
+    : " 📱 iPhone 提示：将此页「添加到主屏幕」后可离线使用；主屏幕 App 与 Safari 存储隔离，进度请用导出/导入 JSON 互传。";
+}
+$("#weakList").addEventListener("click", e => {
+  const it = e.target.closest(".weak-item");
+  if(it) gotoNetwork(it.dataset.goto);
+});
+STATES = loadStates();
+renderGrid();
+buildNetwork();
+renderChecklist();
+refreshAllKpRows();
+updateStats();
+applyFilters();
+let rsTimer = null;
+window.addEventListener("resize", () => {
+  clearTimeout(rsTimer);
+  rsTimer = setTimeout(() => {
+    const m = window.innerWidth < 900;
+    if(m !== isMobileNet){ buildNetwork(); applyFilters(); }
+  }, 280);
+});
+</script>
+</body>
+</html>
